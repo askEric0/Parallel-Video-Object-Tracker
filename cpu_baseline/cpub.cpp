@@ -106,7 +106,7 @@ void runTracking(cv::VideoCapture& cap,
         frame_count++;
 
         if (success) {
-            cv::rectangle(frame, bbox, cv::Scalar(0, 0, 255), 2);
+            cv::rectangle(frame, bbox, cv::Scalar(0, 0, 255), 4);
             cv::putText(frame, "Tracking",
                         {20, 30}, cv::FONT_HERSHEY_SIMPLEX,
                         0.8, {0, 255, 0}, 2);
