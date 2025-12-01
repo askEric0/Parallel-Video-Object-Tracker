@@ -11,7 +11,7 @@ CUDA_FLAGS = -std=c++17 "--generate-code=arch=compute_52,code=[compute_52,sm_52]
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/include -isystem /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4
+CXX_INCLUDES = -I/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/include -isystem /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4
 
 CXX_FLAGS = -std=gnu++17
 

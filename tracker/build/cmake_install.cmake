@@ -1,4 +1,4 @@
-# Install script for directory: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker
+# Install script for directory: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

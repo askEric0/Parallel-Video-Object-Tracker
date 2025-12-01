@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker
+CMAKE_SOURCE_DIR = /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build
+CMAKE_BINARY_DIR = /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/tracker.dir/depend.make
@@ -70,25 +70,25 @@ include CMakeFiles/tracker.dir/progress.make
 include CMakeFiles/tracker.dir/flags.make
 
 CMakeFiles/tracker.dir/src/main.cpp.o: CMakeFiles/tracker.dir/flags.make
-CMakeFiles/tracker.dir/src/main.cpp.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/main.cpp
+CMakeFiles/tracker.dir/src/main.cpp.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/main.cpp
 CMakeFiles/tracker.dir/src/main.cpp.o: CMakeFiles/tracker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/tracker.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/main.cpp.o -MF CMakeFiles/tracker.dir/src/main.cpp.o.d -o CMakeFiles/tracker.dir/src/main.cpp.o -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/tracker.dir/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/main.cpp.o -MF CMakeFiles/tracker.dir/src/main.cpp.o.d -o CMakeFiles/tracker.dir/src/main.cpp.o -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/main.cpp
 
 CMakeFiles/tracker.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tracker.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/main.cpp > CMakeFiles/tracker.dir/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/main.cpp > CMakeFiles/tracker.dir/src/main.cpp.i
 
 CMakeFiles/tracker.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tracker.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/main.cpp -o CMakeFiles/tracker.dir/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/main.cpp -o CMakeFiles/tracker.dir/src/main.cpp.s
 
 CMakeFiles/tracker.dir/src/baseline_kernel.cu.o: CMakeFiles/tracker.dir/flags.make
 CMakeFiles/tracker.dir/src/baseline_kernel.cu.o: CMakeFiles/tracker.dir/includes_CUDA.rsp
-CMakeFiles/tracker.dir/src/baseline_kernel.cu.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/baseline_kernel.cu
+CMakeFiles/tracker.dir/src/baseline_kernel.cu.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/baseline_kernel.cu
 CMakeFiles/tracker.dir/src/baseline_kernel.cu.o: CMakeFiles/tracker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object CMakeFiles/tracker.dir/src/baseline_kernel.cu.o"
-	/usr/local/cuda-11.7/bin/nvcc -forward-unknown-to-host-compiler -ccbin=/usr/bin/gcc-11 $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/baseline_kernel.cu.o -MF CMakeFiles/tracker.dir/src/baseline_kernel.cu.o.d -x cu -rdc=true -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/baseline_kernel.cu -o CMakeFiles/tracker.dir/src/baseline_kernel.cu.o
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object CMakeFiles/tracker.dir/src/baseline_kernel.cu.o"
+	/usr/local/cuda-11.7/bin/nvcc -forward-unknown-to-host-compiler -ccbin=/usr/bin/gcc-11 $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/baseline_kernel.cu.o -MF CMakeFiles/tracker.dir/src/baseline_kernel.cu.o.d -x cu -rdc=true -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/baseline_kernel.cu -o CMakeFiles/tracker.dir/src/baseline_kernel.cu.o
 
 CMakeFiles/tracker.dir/src/baseline_kernel.cu.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CUDA source to CMakeFiles/tracker.dir/src/baseline_kernel.cu.i"
@@ -99,18 +99,18 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.s: cmake_force
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
 CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: CMakeFiles/tracker.dir/flags.make
-CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/ncc_cpu.cpp
+CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp
 CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: CMakeFiles/tracker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o -MF CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o.d -o CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/ncc_cpu.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o -MF CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o.d -o CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp
 
 CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/ncc_cpu.cpp > CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp > CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i
 
 CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/src/ncc_cpu.cpp -o CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp -o CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s
 
 # Object files for target tracker
 tracker_OBJECTS = \
@@ -184,7 +184,7 @@ CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/deviceLinkLibs.rsp
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/deviceObjects1.rsp
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/dlink.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CUDA device code CMakeFiles/tracker.dir/cmake_device_link.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CUDA device code CMakeFiles/tracker.dir/cmake_device_link.o"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tracker.dir/dlink.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -262,10 +262,10 @@ tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_imgproc.so.
 tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_core.so.4.5.3
 tracker: CMakeFiles/tracker.dir/cmake_device_link.o
 tracker: CMakeFiles/tracker.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable tracker"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable tracker"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tracker.dir/link.txt --verbose=$(VERBOSE)
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold "Setting library search path: system libstdc++ first, then OpenCV"
-	chrpath -r /usr/lib/gcc/x86_64-linux-gnu/11:/usr/local/depot/fsl/fslpython/envs/fslpython/lib /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/tracker 2>/dev/null || true
+	chrpath -r /usr/lib/gcc/x86_64-linux-gnu/11:/usr/local/depot/fsl/fslpython/envs/fslpython/lib /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/tracker 2>/dev/null || true
 
 # Rule to build all files generated by this target.
 CMakeFiles/tracker.dir/build: tracker
@@ -276,6 +276,6 @@ CMakeFiles/tracker.dir/clean:
 .PHONY : CMakeFiles/tracker.dir/clean
 
 CMakeFiles/tracker.dir/depend:
-	cd /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/tracker/build/CMakeFiles/tracker.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles/tracker.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/tracker.dir/depend
 
