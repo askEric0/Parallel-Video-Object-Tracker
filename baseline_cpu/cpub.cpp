@@ -14,13 +14,13 @@ bool loadVideo(const std::string& path, cv::VideoCapture& cap, cv::Mat& firstFra
 
     cap.open(path);
     if (!cap.isOpened()) {
-        std::cerr << "❌ Error: Cannot open video file!" << std::endl;
+        std::cerr << " Error: Cannot open video file!" << std::endl;
         return false;
     }
 
     cap >> firstFrame;
     if (firstFrame.empty()) {
-        std::cerr << "❌ Error: Empty first frame!" << std::endl;
+        std::cerr << " Error: Empty first frame!" << std::endl;
         return false;
     }
 
@@ -99,7 +99,7 @@ bool createVideoWriter(cv::VideoWriter& out,
     time_ms = ms(t1 - t0).count();
 
     if (!out.isOpened()) {
-        std::cerr << "❌ Error: Cannot open output video file!\n";
+        std::cerr << " Error: Cannot open output video file!\n";
         return false;
     }
     return true;
@@ -192,10 +192,10 @@ int main() {
     if (loadCachedVideo(input_cache, frames, t_cache)) {
         use_cache = true;
         firstFrame = frames[0];
-        std::cout << "✅ Using cached input\n";
+        std::cout << " Using cached input\n";
     }
     else {
-        std::cout << "✅ Using video file\n";
+        std::cout << " Using video file\n";
         if (!loadVideo(input_video, cap, firstFrame, t_open))
             return -1;
     }
