@@ -23,21 +23,21 @@
 // Search window radius around current bbox center (in pixels).
 // We restrict NCC search to this window in the NCC map to reduce drift
 // to background and to prefer staying near the previous location.
-static const int SEARCH_RADIUS_X = 80;
-static const int SEARCH_RADIUS_Y = 80;
+// A moderate radius works well for car.mp4: small enough to avoid
+// jumping to distant distractors, large enough to handle motion.
+static const int SEARCH_RADIUS_X = 60;
+static const int SEARCH_RADIUS_Y = 60;
 
 // Minimum acceptable NCC score; below this we keep the previous bbox
 // instead of jumping to a low-confidence match.
-static const double NCC_MIN_CONFIDENCE = 0.5;
+// Slightly lower threshold so we don't freeze too easily, but still
+// ignore clearly bad matches.
+static const double NCC_MIN_CONFIDENCE = 0.4;
 
-// If NCC score is this high, we treat the match as very reliable and use
-// it to slowly update (adapt) the template to handle appearance / scale
-// changes over time.
-static const double NCC_STRONG_CONFIDENCE = 0.7;
-
-// Template update learning rate: how much of the new patch we blend into
-// the existing template at each strong, confident match.
-static const double TEMPLATE_UPDATE_LR = 0.1;
+// We disable template adaptation for robustness: keep the original
+// template fixed so we don't accidentally "learn" the bush/road.
+static const double NCC_STRONG_CONFIDENCE = 1.0;
+static const double TEMPLATE_UPDATE_LR = 0.0;
 
 // Utility mode forward declarations
 static int run_interactive_tracker(const std::string& video_path,
@@ -91,8 +91,7 @@ int main(int argc, char** argv) {
 // ---------------------------------------------------------------------
 // Interactive tracker mode (GUI), used for demos.
 // ---------------------------------------------------------------------
-static int run_interactive_tracker(const std::string& video_path,
-                                   bool use_cuda) {
+static int run_interactive_tracker(const std::string& video_path, bool use_cuda) {
 
     // ---------------------------------------------------------------------
     // Open video file
@@ -250,22 +249,14 @@ static int run_interactive_tracker(const std::string& video_path,
         }
 
         // If the best NCC score is too low, keep the previous bbox instead
-        // of jumping to a dubious location.
+        // of jumping to a dubious location. We no longer adapt the template;
+        // we simply move the box to the local NCC peak when confidence is
+        // good enough.
         if (bestVal >= NCC_MIN_CONFIDENCE) {
             curr_bbox.x = bestLoc.x;
             curr_bbox.y = bestLoc.y;
             curr_bbox.width  = templW;
             curr_bbox.height = templH;
-
-            // When the match is very strong, update the template slightly
-            // toward the current patch to adapt to slow appearance / scale
-            // changes (camera motion, object size change, lighting, etc.).
-            if (bestVal >= NCC_STRONG_CONFIDENCE) {
-                cv::Mat new_patch = frame_gray_f32(curr_bbox).clone();
-                cv::addWeighted(templ_gray_f32, 1.0 - TEMPLATE_UPDATE_LR,
-                                new_patch, TEMPLATE_UPDATE_LR, 0.0,
-                                templ_gray_f32);
-            }
         }
 
         // Draw bbox
