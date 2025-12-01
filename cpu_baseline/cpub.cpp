@@ -22,37 +22,60 @@ bool loadVideo(const std::string& path, cv::VideoCapture& cap, cv::Mat& firstFra
     return true;
 }
 
-// Load cached video frames from binary file, if possible
-bool loadCachedVideo(const std::string& path, std::vector<cv::Mat>& frames) {
-    std::ifstream ifs(path, std::ios::binary);
+// Open cached video and read only the first frame.
+// Subsequent frames can be streamed from the same ifstream to avoid
+// keeping the entire video in memory.
+bool openCachedVideo(const std::string& path,
+                     std::ifstream& ifs,
+                     cv::Mat& firstFrame,
+                     int& width,
+                     int& height,
+                     int& type) {
+    ifs.open(path, std::ios::binary);
     if (!ifs) return false;
 
-    int width, height, type;
     ifs.read((char*)&width, sizeof(int));
     ifs.read((char*)&height, sizeof(int));
     ifs.read((char*)&type, sizeof(int));
 
-    frames.clear();
-
-    while (true) {
-        cv::Mat frame(height, width, type);
-        if (!ifs.read((char*)frame.data, width * height * frame.elemSize()))
-            break;
-        frames.push_back(frame.clone());
+    if (!ifs) {
+        std::cerr << " Error: Failed to read cache header!" << std::endl;
+        return false;
     }
 
-    int count;
-    ifs.read((char*)&count, sizeof(int));
+    firstFrame.create(height, width, type);
+    if (!ifs.read((char*)firstFrame.data,
+                  width * height * firstFrame.elemSize())) {
+        std::cerr << " Error: Failed to read first cached frame!" << std::endl;
+        return false;
+    }
 
-    std::cout << "[Cache] Loaded frames: " << frames.size() << std::endl;
+    std::cout << " Using cached input: " << path << std::endl;
     return true;
 }
 
 
 
 
-// Select ROI
+// Select ROI.
+// On a machine with a display, this will pop up an interactive window.
+// On headless machines (no DISPLAY set), fall back to a fixed ROI so the
+// program can still run.
 cv::Rect selectInitialROI(const cv::Mat& frame) {
+    const char* display = std::getenv("DISPLAY");
+    if (display == nullptr || std::string(display).empty()) {
+        // Hard-coded ROI tuned for car.mp4; adjust if needed.
+        int w = frame.cols;
+        int h = frame.rows;
+        int boxW = w / 8;
+        int boxH = h / 8;
+        int x = (w - boxW) / 2;
+        int y = (h - boxH) / 2;
+        std::cout << " [Headless] Using fixed ROI at (" << x << ", " << y
+                  << ", " << boxW << ", " << boxH << ")\n";
+        return cv::Rect(x, y, boxW, boxH);
+    }
+
     cv::Rect bbox = cv::selectROI("Select Object", frame, false);
     cv::destroyWindow("Select Object");
     return bbox;
@@ -106,7 +129,7 @@ void runTracking(cv::VideoCapture& cap,
         frame_count++;
 
         if (success) {
-            cv::rectangle(frame, bbox, cv::Scalar(0, 0, 255), 4);
+            cv::rectangle(frame, bbox, cv::Scalar(0, 0, 255), 2);
             cv::putText(frame, "Tracking",
                         {20, 30}, cv::FONT_HERSHEY_SIMPLEX,
                         0.8, {0, 255, 0}, 2);
@@ -136,18 +159,18 @@ int main() {
     std::string input_cache = "../frames/car.cache";
 
     cv::VideoCapture cap;
-    std::vector<cv::Mat> frames;
+    std::ifstream cache_stream;
     cv::Mat firstFrame;
 
     bool use_cache = false;
 
-    // Try cache first
-    if (loadCachedVideo(input_cache, frames)) {
+    int width = 0, height = 0, type = 0;
+
+    // Try cache first (streaming, not loading all frames into RAM)
+    if (openCachedVideo(input_cache, cache_stream,
+                        firstFrame, width, height, type)) {
         use_cache = true;
-        firstFrame = frames[0];
-        std::cout << " Using cached input: " << input_cache << std::endl;
-    }
-    else {
+    } else {
         std::cout << " Cache not found, using video: " << input_video << std::endl;
         if (!loadVideo(input_video, cap, firstFrame)) {
             return -1;
@@ -169,10 +192,11 @@ int main() {
     int frame_count = 0;
 
     if (use_cache) {
-        // Cached path
-        for (size_t i = 1; i < frames.size(); i++) {
-            cv::Mat& frame = frames[i];
+        // Cached path: stream frames from disk to keep memory usage low.
+        cv::Mat frame(height, width, type);
 
+        while (cache_stream.read((char*)frame.data,
+                                 width * height * frame.elemSize())) {
             auto start = std::chrono::high_resolution_clock::now();
             bool success = tracker->update(frame, bbox);
             auto end = std::chrono::high_resolution_clock::now();
@@ -193,10 +217,11 @@ int main() {
             out.write(frame);
         }
 
-        std::cout << " Average CPU FPS (cached): "
-                  << fps_sum / frame_count << std::endl;
-    }
-    else {
+        if (frame_count > 0) {
+            std::cout << " Average CPU FPS (cached): "
+                      << fps_sum / frame_count << std::endl;
+        }
+    } else {
         runTracking(cap, out, tracker, bbox);
     }
 

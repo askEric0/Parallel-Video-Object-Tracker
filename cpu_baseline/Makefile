@@ -1,13 +1,21 @@
-CXX = cl
-CXXFLAGS = /EHsc /O2 /std:c++17 /I C:\opencv\build\install\include
+CXX      = g++-11
+# OpenCV from the fslpython environment (same as your tracker project)
+OPENCV_INC = /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4
+OPENCV_LIB = /usr/local/depot/fsl/fslpython/envs/fslpython/lib
 
-LDFLAGS = C:\opencv\build\install\x64\vc17\lib\opencv_world4130.lib
+CXXFLAGS = -O3 -std=c++17 -Wall -I$(OPENCV_INC)
+# Need tracking/video modules because cpub.cpp uses cv::TrackerCSRT
+LDFLAGS  = -L$(OPENCV_LIB) \
+           -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_videoio \
+           -lopencv_video -lopencv_tracking
 
-TARGET = cpub.exe
-SRC = cpub.cpp
+TARGET   = cpub
+SRC      = cpub.cpp
 
-all:
-	$(CXX) $(CXXFLAGS) $(SRC) $(LDFLAGS) /Fe$(TARGET)
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
 
 clean:
-	del $(TARGET) *.obj
+	rm -f $(TARGET) *.o
