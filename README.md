@@ -79,6 +79,17 @@ CUDA on an NVIDIA GPU is an ideal platform for this project because the core wor
 
 The schedule will be roughly divided into 4 weeks' workload. Week 4 is short hence allocated for project report writing.
 
+Updated Schedule:
+#### Dec 1 -- Dec 4:
+- Implement batched frame processing to improve GPU utilization. (Eric + Yanxin)
+- Try to apply lightweight kernel optimizations, such as basic shared-memory tiling, if it indeed helps optimization. (Eric + Yanxin)
+- Try to achieve a modest speedup of 1.2x-1.5x over the current CUDA version. (Eric \& Yanxin)
+
+#### Dec 5 -- Dec 8:
+- Clean up and finalize the code for the final report. (Eric + Yanxin)
+- Demonstrate stable real-time or near-real-time tracking on representative video examples. (Eric + Yanxin)
+
+Original Schedule:
 #### Week 1:
 - Implement CPU baseline tracker (template matching / NCC) for correctness reference. (Yanxin + Eric)
 - Set up project structure, build system (CMake), and OpenCV I/O + visualization. (Eric)
@@ -98,6 +109,7 @@ The schedule will be roughly divided into 4 weeks' workload. Week 4 is short hen
 #### Week 4:
 - Project Report Writing. (Yanxin + Eric)
 - Optional: Real-time tracking by tuning batch size and accept streaming. (Yanxin + Eric)
+
 
 
 
