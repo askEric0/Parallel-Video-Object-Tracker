@@ -58,10 +58,11 @@ We plan to improve the speed of video processing with at least 5$\times$ from a 
 
 #### 75% Goal: Initial GPU Speedup
 - Add batched frame processing to improve GPU utilization.
-- Implement shared memory tiling and block-level synchronization for CUDA optimization.
+- Implement shared memory tiling ~~and block-level synchronization~~ for CUDA optimization.
 
 #### 100% Goal (Target Completion): Optimized CUDA Tracker
-- Achieve about $5\times$ speedup over CPU baseline.
+- ~~Achieve about $5\times$ speedup over CPU baseline.~~
+- Achieve about $1.2\times--1.5\times$ speedup over CPU baseline
 - Demonstrate stable real-time or near-real-time tracking on short videos.
 
 #### 125% Goal: Extended Optimizations and Robustness
@@ -97,4 +98,5 @@ The schedule will be roughly divided into 4 weeks' workload. Week 4 is short hen
 #### Week 4:
 - Project Report Writing. (Yanxin + Eric)
 - Optional: Real-time tracking by tuning batch size and accept streaming. (Yanxin + Eric)
+
 
