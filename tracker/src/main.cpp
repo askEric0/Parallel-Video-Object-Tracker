@@ -41,7 +41,14 @@ static const double TEMPLATE_UPDATE_LR = 0.0;
 
 // Utility mode forward declarations
 static int run_interactive_tracker(const std::string& video_path,
-                                   bool use_cuda);
+                                   bool use_cuda,
+                                   bool use_batched,
+                                   int batch_size);
+static int run_interactive_record(const std::string& video_path,
+                                  bool use_cuda,
+                                  bool use_batched,
+                                  int batch_size,
+                                  const std::string& output_path);
 static int run_cpu_cuda_check(const std::string& video_path);
 static int run_benchmark(const std::string& video_path,
                          bool use_cuda,
@@ -65,14 +72,19 @@ int main(int argc, char** argv) {
     bool run_check_mode = false;
     bool run_bench_mode = false;
     bool use_shared_kernel = false;
-    int batch_size = 4;
+    bool use_batched = false;
+    int batch_size = 0;
+    bool run_record_mode = false;
+    std::string record_output_path = "tracked_output.mp4";
 
     for (int i = 2; i < argc; ++i) {
         std::string arg = argv[i];
-        if (arg == "--cpu")          use_cuda = false;
-        else if (arg == "--check")  run_check_mode = true;
-        else if (arg == "--bench")  run_bench_mode = true;
-        else if (arg == "--shared") use_shared_kernel = true;
+        if (arg == "--cpu")           use_cuda = false;
+        else if (arg == "--check")   run_check_mode = true;
+        else if (arg == "--bench")   run_bench_mode = true;
+        else if (arg == "--shared")  use_shared_kernel = true;
+        else if (arg == "--batched") use_batched = true;
+        else if (arg == "--record")  run_record_mode = true;
         else if (arg.rfind("--batch=", 0) == 0) {
             batch_size = std::max(1, std::atoi(arg.substr(8).c_str()));
         }
@@ -84,44 +96,32 @@ int main(int argc, char** argv) {
     if (run_bench_mode) {
         return run_benchmark(video_path, use_cuda, use_shared_kernel, batch_size);
     }
+    if (run_record_mode) {
+        return run_interactive_record(video_path, use_cuda, use_batched,
+                                      batch_size, record_output_path);
+    }
 
-    return run_interactive_tracker(video_path, use_cuda);
+    return run_interactive_tracker(video_path, use_cuda, use_batched, batch_size);
 }
 
-// ---------------------------------------------------------------------
-// Interactive tracker mode (GUI), used for demos.
-// ---------------------------------------------------------------------
-static int run_interactive_tracker(const std::string& video_path, bool use_cuda) {
-
-    // ---------------------------------------------------------------------
-    // Open video file
-    // ---------------------------------------------------------------------
+static int run_interactive_tracker(const std::string& video_path, bool use_cuda, bool use_batched, int batch_size) {
     cv::VideoCapture cap(video_path);
     if (!cap.isOpened()) {
         std::cerr << "Cannot open video: " << video_path << std::endl;
         return -1;
     }
 
-    // If there is no DISPLAY (e.g., running on a headless server), the
-    // interactive GUI-based tracker cannot show windows. In that case,
-    // fall back to the headless benchmark mode so the program can still
-    // run without user interaction.
+    // No display, run benchmark mode instead.
     const char* display = std::getenv("DISPLAY");
     if (display == nullptr || std::string(display).empty()) {
         std::cout << "[Headless] DISPLAY not set; running benchmark mode instead "
                      "of interactive GUI tracker.\n";
-        // Use a reasonable default batch size and no shared-kernel by default.
         bool use_shared_kernel = false;
         int batch_size = 4;
         return run_benchmark(video_path, use_cuda, use_shared_kernel, batch_size);
     }
 
-    // ---------------------------------------------------------------------
     // Let the user choose WHICH frame to start from.
-    // We show frames in a preview window; when the user presses SPACE or ENTER,
-    // we freeze on that frame and ask them to draw the ROI. This allows
-    // skipping initial frames that do not contain the target object.
-    // ---------------------------------------------------------------------
     cv::Mat frame;
     cv::namedWindow("Frame Preview", cv::WINDOW_NORMAL);
     std::cout << "Use the preview window to pick a frame that contains the target object.\n"
@@ -178,9 +178,10 @@ static int run_interactive_tracker(const std::string& video_path, bool use_cuda)
     // Timestamp of previous frame (for FPS computation).
     int64 last_tick = cv::getTickCount();
 
-    // ---------------------------------------------------------------------
-    // Main tracking loop: process frames until the video ends or user quits.
-    // ---------------------------------------------------------------------
+    // Overall timing for interactive tracking (starts after ROI selection).
+    int64 t_start = cv::getTickCount();
+    int total_frames = 0;
+
     while (true) {
         if (!cap.read(frame)) {
             break; // end of video
@@ -200,12 +201,32 @@ static int run_interactive_tracker(const std::string& video_path, bool use_cuda)
         int templW = templ_gray_f32.cols;
         int templH = templ_gray_f32.rows;
 
-        // Run either CPU or CUDA NCC over the full frame
+        // Run either CPU or CUDA NCC over the full frame.
+        // In interactive mode, the "batched" CUDA path still processes one
+        // frame at a time, but uses the same batched kernel API so you can
+        // exercise that implementation interactively.
         cv::Mat ncc_map;
         if (use_cuda) {
-            baseline::ncc_match_naive_cuda(frame_gray_f32, templ_gray_f32, ncc_map);
+            if (use_batched) {
+                std::vector<cv::Mat> batch_frames;
+                batch_frames.reserve(1);
+                batch_frames.push_back(frame_gray_f32);
+
+                std::vector<cv::Mat> ncc_maps;
+                baseline::ncc_match_naive_cuda_batched(batch_frames,
+                                                       templ_gray_f32,
+                                                       ncc_maps);
+                CV_Assert(!ncc_maps.empty());
+                ncc_map = ncc_maps[0];
+            } else {
+                baseline::ncc_match_naive_cuda(frame_gray_f32,
+                                               templ_gray_f32,
+                                               ncc_map);
+            }
         } else {
-            baseline::ncc_match_cpu(frame_gray_f32, templ_gray_f32, ncc_map);
+            baseline::ncc_match_cpu(frame_gray_f32,
+                                    templ_gray_f32,
+                                    ncc_map);
         }
 
         // Compute a local search window in NCC space around the current
@@ -268,14 +289,12 @@ static int run_interactive_tracker(const std::string& video_path, bool use_cuda)
         last_tick = now_tick;
         double fps = (dt > 0.0) ? (1.0 / dt) : 0.0;
 
+        // Count processed frames for overall timing.
+        total_frames++;
+
         std::string fps_text = cv::format("FPS: %.1f", fps);
         cv::putText(frame, fps_text, cv::Point(20, 30),
                     cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 255, 0), 2);
-
-        // Write full-resolution frame to output video if available
-        // if (writer.isOpened()) {
-        //     writer.write(frame);
-        // }
 
         // For display, show a downscaled copy so the whole frame fits
         // in a smaller window (helps over X11 / remote desktop).
@@ -296,6 +315,211 @@ static int run_interactive_tracker(const std::string& video_path, bool use_cuda)
             break;
         }
     }
+
+    // Report total time and average FPS for the interactive tracking phase.
+    int64 t_end = cv::getTickCount();
+    double elapsed = (t_end - t_start) / cv::getTickFrequency();
+    double avg_fps = (elapsed > 0.0) ? (static_cast<double>(total_frames) / elapsed) : 0.0;
+    std::cout << "Interactive tracking summary: frames=" << total_frames
+              << ", time=" << elapsed << " s"
+              << ", FPS=" << avg_fps << std::endl;
+
+    return 0;
+}
+
+// ---------------------------------------------------------------------
+// Interactive ROI selection but headless tracking: write annotated
+// video to disk instead of showing GUI windows.
+// ---------------------------------------------------------------------
+static int run_interactive_record(const std::string& video_path,
+                                  bool use_cuda,
+                                  bool use_batched,
+                                  int batch_size,
+                                  const std::string& output_path) {
+    cv::VideoCapture cap(video_path);
+    if (!cap.isOpened()) {
+        std::cerr << "Cannot open video: " << video_path << std::endl;
+        return -1;
+    }
+
+    // We still need a DISPLAY for ROI selection, but afterwards we do not
+    // show the live demo – we only write to a video file.
+    const char* display = std::getenv("DISPLAY");
+    if (display == nullptr || std::string(display).empty()) {
+        std::cerr << "[Headless] DISPLAY not set; cannot run ROI-based "
+                     "recording mode.\n";
+        return -1;
+    }
+
+    // Let the user choose WHICH frame to start from.
+    cv::Mat frame;
+    cv::namedWindow("Frame Preview", cv::WINDOW_NORMAL);
+    std::cout << "Use the preview window to pick a frame that contains the target object.\n"
+              << "Press SPACE or ENTER to select the current frame, or Q/ESC to quit.\n";
+
+    while (true) {
+        if (!cap.read(frame)) {
+            std::cerr << "Reached end of video before ROI selection." << std::endl;
+            return -1;
+        }
+
+        cv::imshow("Frame Preview", frame);
+        int key = cv::waitKey(30);
+
+        if (key == 27 || key == 'q') { // ESC or 'q'
+            std::cout << "ROI selection cancelled by user." << std::endl;
+            return 0;
+        }
+        if (key == ' ' || key == '\r' || key == '\n') { // SPACE or ENTER
+            break;
+        }
+    }
+    cv::destroyWindow("Frame Preview");
+
+    // Select initial ROI on the chosen frame
+    cv::Rect roi = cv::selectROI("Select ROI", frame, false, false);
+    if (roi.width == 0 || roi.height == 0) {
+        std::cerr << "No ROI selected" << std::endl;
+        return -1;
+    }
+    cv::destroyWindow("Select ROI");
+
+    // Prepare template from first frame.
+    cv::Mat frame_gray_f32 = toGrayF32(frame);
+    cv::Mat templ_gray_f32 = frame_gray_f32(roi).clone();
+
+    // Current estimate of object location in full-frame coordinates.
+    cv::Rect curr_bbox = roi;
+
+    // Setup video writer to save annotated frames.
+    double fps = cap.get(cv::CAP_PROP_FPS);
+    if (fps <= 0.0) {
+        fps = 30.0;
+    }
+    int fourcc = cv::VideoWriter::fourcc('a', 'v', 'c', '1');
+    if (fourcc == 0) {
+        fourcc = cv::VideoWriter::fourcc('M', 'J', 'P', 'G');
+    }
+    cv::VideoWriter writer(output_path, fourcc, fps,
+                           cv::Size(frame.cols, frame.rows));
+    if (!writer.isOpened()) {
+        std::cerr << "Failed to open output video for writing: "
+                  << output_path << std::endl;
+        return -1;
+    }
+
+    // Write the initial frame with the selected bbox.
+    cv::rectangle(frame, curr_bbox, cv::Scalar(0, 255, 0), 2);
+    writer.write(frame);
+
+    // Timing.
+    int64 last_tick = cv::getTickCount();
+    int64 t_start = cv::getTickCount();
+    int total_frames = 1; // already wrote first frame
+
+    while (true) {
+        if (!cap.read(frame)) {
+            break; // end of video
+        }
+
+        frame_gray_f32 = toGrayF32(frame);
+
+        int frameW = frame_gray_f32.cols;
+        int frameH = frame_gray_f32.rows;
+        int templW = templ_gray_f32.cols;
+        int templH = templ_gray_f32.rows;
+
+        cv::Mat ncc_map;
+        if (use_cuda) {
+            if (use_batched) {
+                std::vector<cv::Mat> batch_frames;
+                batch_frames.reserve(1);
+                batch_frames.push_back(frame_gray_f32);
+
+                std::vector<cv::Mat> ncc_maps;
+                baseline::ncc_match_naive_cuda_batched(batch_frames,
+                                                       templ_gray_f32,
+                                                       ncc_maps);
+                CV_Assert(!ncc_maps.empty());
+                ncc_map = ncc_maps[0];
+            } else {
+                baseline::ncc_match_naive_cuda(frame_gray_f32,
+                                               templ_gray_f32,
+                                               ncc_map);
+            }
+        } else {
+            baseline::ncc_match_cpu(frame_gray_f32,
+                                    templ_gray_f32,
+                                    ncc_map);
+        }
+
+        int cx = curr_bbox.x + curr_bbox.width  / 2;
+        int cy = curr_bbox.y + curr_bbox.height / 2;
+
+        int outW = ncc_map.cols;
+        int outH = ncc_map.rows;
+
+        int minTx = std::max(0, cx - SEARCH_RADIUS_X - templW / 2);
+        int maxTx = std::min(outW - 1, cx + SEARCH_RADIUS_X - templW / 2);
+        int minTy = std::max(0, cy - SEARCH_RADIUS_Y - templH / 2);
+        int maxTy = std::min(outH - 1, cy + SEARCH_RADIUS_Y - templH / 2);
+
+        int searchW = maxTx - minTx + 1;
+        int searchH = maxTy - minTy + 1;
+
+        cv::Point bestLoc;
+        double bestVal = -1.0;
+
+        if (searchW > 0 && searchH > 0) {
+            cv::Rect ncc_search_roi(minTx, minTy, searchW, searchH);
+            cv::Mat ncc_roi = ncc_map(ncc_search_roi);
+
+            double minVal, maxVal;
+            cv::Point minLoc, maxLoc;
+            cv::minMaxLoc(ncc_roi, &minVal, &maxVal, &minLoc, &maxLoc);
+
+            bestVal = maxVal;
+            bestLoc = cv::Point(maxLoc.x + minTx, maxLoc.y + minTy);
+        } else {
+            double minVal, maxVal;
+            cv::Point minLoc, maxLoc;
+            cv::minMaxLoc(ncc_map, &minVal, &maxVal, &minLoc, &maxLoc);
+            bestVal = maxVal;
+            bestLoc = maxLoc;
+        }
+
+        if (bestVal >= NCC_MIN_CONFIDENCE) {
+            curr_bbox.x = bestLoc.x;
+            curr_bbox.y = bestLoc.y;
+            curr_bbox.width  = templW;
+            curr_bbox.height = templH;
+        }
+
+        // Draw bbox and FPS text, then write to file.
+        cv::rectangle(frame, curr_bbox, cv::Scalar(0, 255, 0), 2);
+
+        int64 now_tick = cv::getTickCount();
+        double dt = (now_tick - last_tick) / cv::getTickFrequency();
+        last_tick = now_tick;
+        double fps_inst = (dt > 0.0) ? (1.0 / dt) : 0.0;
+
+        total_frames++;
+        std::string fps_text = cv::format("FPS: %.1f", fps_inst);
+        cv::putText(frame, fps_text, cv::Point(20, 30),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 255, 0), 2);
+
+        writer.write(frame);
+    }
+
+    int64 t_end = cv::getTickCount();
+    double elapsed = (t_end - t_start) / cv::getTickFrequency();
+    double avg_fps = (elapsed > 0.0)
+                     ? (static_cast<double>(total_frames) / elapsed)
+                     : 0.0;
+    std::cout << "Recorded tracking summary: frames=" << total_frames
+              << ", time=" << elapsed << " s"
+              << ", FPS=" << avg_fps
+              << ", output=\"" << output_path << "\"\n";
 
     return 0;
 }
