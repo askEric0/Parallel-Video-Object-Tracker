@@ -33,6 +33,16 @@ target_include_directories(tracker PRIVATE include)
 
 target_link_libraries(tracker PRIVATE ${OpenCV_LIBS})
 
+# Explicitly link image/Qt dependencies that OpenCV imgcodecs/highgui expect.
+# These live inside the same fslpython environment as OpenCV and are not
+# pulled in automatically by the linker on this system.
+set(FSLPYTHON_LIBDIR "/usr/local/depot/fsl/fslpython/envs/fslpython/lib")
+target_link_libraries(tracker PRIVATE
+    ${FSLPYTHON_LIBDIR}/libjpeg.so.9
+    ${FSLPYTHON_LIBDIR}/libjasper.so.1
+    ${FSLPYTHON_LIBDIR}/libQt5Test.so.5
+)
+
 # Force linking against system libstdc++ and libgcc_s instead of fslpython versions
 # This fixes GLIBCXX version compatibility issues
 get_filename_component(GCC_LIBDIR "/usr/lib/gcc/x86_64-linux-gnu/11" ABSOLUTE)
