@@ -1,25 +1,12 @@
-// Naive and slightly optimized CUDA implementations of normalized
-// cross-correlation (NCC).
-// This file contains:
-//   1) A small helper for CUDA error checking.
-//   2) A "naive" NCC kernel where each thread computes the NCC value
-//      for ONE output location (one possible template position).
-//   3) A "shared" NCC kernel that loads the template into shared memory
-//      once per block (reduces global memory traffic).
-//   4) A batched version of the naive kernel for processing multiple
-//      frames per launch (for throughput benchmarking).
-//   5) Host wrappers that upload data, launch kernels, and download
-//      NCC maps back to cv::Mat.
-
 #include "baseline_kernel.hpp"
 #include <cuda_runtime.h>
 #include <iostream>
 #include <cmath>
-#include <cstring>  // std::memcpy for batched copies
+#include <cstring>
 
-namespace {
+constexpr int MAX_TEMPL_PIXELS = 4096;
+__constant__ float templ_const[MAX_TEMPL_PIXELS];
 
-// Convenience wrapper that aborts on CUDA errors and prints a message.
 void checkCuda(cudaError_t err, const char* msg) {
     if (err != cudaSuccess) {
         std::cerr << "CUDA error (" << msg << "): "
@@ -28,25 +15,18 @@ void checkCuda(cudaError_t err, const char* msg) {
     }
 }
 
-// Each thread computes NCC(frame, templ) for ONE output pixel (ox, oy),
-// i.e. one possible top-left location of the template inside the frame.
 __global__
 void nccKernelNaive(const float* frame, int frameW, int frameH,
                     const float* templ, int templW, int templH,
                     float templMean, float templStd,
                     float* out, int outW, int outH)
 {
-    // Output coordinates (top-left of the template window) assigned
-    // to this thread.
     int ox = blockIdx.x * blockDim.x + threadIdx.x;
     int oy = blockIdx.y * blockDim.y + threadIdx.y;
 
     if (ox >= outW || oy >= outH) return;
 
-    const int N = templW * templH; // number of pixels in the template
-
-    // First pass: compute mean and standard deviation of the frame
-    // patch under the template at (ox, oy).
+    const int N = templW * templH;
     float sum = 0.0f;
     float sumSq = 0.0f;
 
@@ -67,7 +47,6 @@ void nccKernelNaive(const float* frame, int frameW, int frameH,
     float inv_std    = 1.0f / (std + 1e-6f);
     float inv_t_std  = 1.0f / (templStd + 1e-6f);
 
-    // Second pass: compute covariance between template and frame patch.
     float cov = 0.0f;
     for (int dy = 0; dy < templH; ++dy) {
         int fy = oy + dy;
@@ -80,22 +59,20 @@ void nccKernelNaive(const float* frame, int frameW, int frameH,
         }
     }
 
-    // NCC value in [-1, 1].
     float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
     out[oy * outW + ox] = ncc;
 }
 
-// Same computation as nccKernelNaive, but the template is first loaded
-// into shared memory once per block to reduce global memory traffic.
 __global__
 void nccKernelShared(const float* frame, int frameW, int frameH,
                      const float* templ, int templW, int templH,
                      float templMean, float templStd,
                      float* out, int outW, int outH)
 {
-    extern __shared__ float shTempl[]; // size = templW * templH floats
-
-    // Load the template into shared memory cooperatively.
+    extern __shared__ float shTempl[];
+    int ox = blockIdx.x * blockDim.x + threadIdx.x;
+    int oy = blockIdx.y * blockDim.y + threadIdx.y;
+    
     int tid = threadIdx.y * blockDim.x + threadIdx.x;
     int numThreads = blockDim.x * blockDim.y;
     int templSize = templW * templH;
@@ -104,12 +81,9 @@ void nccKernelShared(const float* frame, int frameW, int frameH,
     }
     __syncthreads();
 
-    int ox = blockIdx.x * blockDim.x + threadIdx.x;
-    int oy = blockIdx.y * blockDim.y + threadIdx.y;
-
     if (ox >= outW || oy >= outH) return;
 
-    const int N = templSize;
+    const int N = templW * templH;
 
     float sum = 0.0f;
     float sumSq = 0.0f;
@@ -117,7 +91,6 @@ void nccKernelShared(const float* frame, int frameW, int frameH,
     for (int dy = 0; dy < templH; ++dy) {
         int fy = oy + dy;
         int frameRow = fy * frameW;
-        int templRow = dy * templW;
         for (int dx = 0; dx < templW; ++dx) {
             float v = frame[frameRow + (ox + dx)];
             sum   += v;
@@ -126,10 +99,10 @@ void nccKernelShared(const float* frame, int frameW, int frameH,
     }
 
     float mean = sum / N;
-    float var  = sumSq / N - mean * mean;
-    float std  = sqrtf(fmaxf(var, 1e-6f));
+    float var = sumSq / N - mean * mean;
+    float std = sqrtf(fmaxf(var, 1e-6f));
 
-    float inv_std   = 1.0f / (std + 1e-6f);
+    float inv_std = 1.0f / (std + 1e-6f);
     float inv_t_std = 1.0f / (templStd + 1e-6f);
 
     float cov = 0.0f;
@@ -148,7 +121,6 @@ void nccKernelShared(const float* frame, int frameW, int frameH,
     out[oy * outW + ox] = ncc;
 }
 
-// Batched naive kernel: blockIdx.z selects which frame in the batch.
 __global__
 void nccKernelNaiveBatched(const float* frames, int frameW, int frameH,
                            const float* templ, int templW, int templH,
@@ -205,21 +177,145 @@ void nccKernelNaiveBatched(const float* frames, int frameW, int frameH,
     outFrame[oy * outW + ox] = ncc;
 }
 
-} // anonymous namespace
+__global__
+void nccKernelConst(const float* frame, int frameW, int frameH,
+                    int templW, int templH,
+                    float templMean, float templStd,
+                    float* out, int outW, int outH)
+{
+    int ox = blockIdx.x * blockDim.x + threadIdx.x;
+    int oy = blockIdx.y * blockDim.y + threadIdx.y;
+    if (ox >= outW || oy >= outH) return;
 
-namespace baseline {
+    const int N = templW * templH;
 
-void ncc_match_naive_cuda(const cv::Mat& frame_gray_f32,
-                          const cv::Mat& templ_gray_f32,
+    float sum   = 0.0f;
+    float sumSq = 0.0f;
+
+    for (int dy = 0; dy < templH; ++dy) {
+        int fy        = oy + dy;
+        int frameRow  = fy * frameW;
+        int frameBase = frameRow + ox;
+        for (int dx = 0; dx < templW; ++dx) {
+            float v = frame[frameBase + dx];
+            sum   += v;
+            sumSq += v * v;
+        }
+    }
+
+    float mean = sum / N;
+    float var  = sumSq / N - mean * mean;
+    float std  = sqrtf(fmaxf(var, 1e-6f));
+
+    float inv_std   = 1.0f / (std + 1e-6f);
+    float inv_t_std = 1.0f / (templStd + 1e-6f);
+
+    float cov = 0.0f;
+    for (int dy = 0; dy < templH; ++dy) {
+        int fy        = oy + dy;
+        int frameRow  = fy * frameW;
+        int frameBase = frameRow + ox;
+        int templRow  = dy * templW;
+        for (int dx = 0; dx < templW; ++dx) {
+            float fv = frame[frameBase + dx];
+            float tv = templ_const[templRow + dx];
+            cov += (fv - mean) * (tv - templMean);
+        }
+    }
+
+    float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
+    out[oy * outW + ox] = ncc;
+}
+__global__
+void nccKernelConstTiled(const float* frame, int frameW, int frameH,
+                         int templW, int templH,
+                         float templMean, float templStd,
+                         float* out, int outW, int outH)
+{
+    int ox = blockIdx.x * blockDim.x + threadIdx.x;
+    int oy = blockIdx.y * blockDim.y + threadIdx.y;
+    if (ox >= outW || oy >= outH) return;
+
+    const int N = templW * templH;
+
+    int tileOx = blockIdx.x * blockDim.x;
+    int tileOy = blockIdx.y * blockDim.y;
+
+    int tileW = blockDim.x + templW - 1;
+    int tileH = blockDim.y + templH - 1;
+
+    extern __shared__ float shFrame[];
+
+    int tid       = threadIdx.y * blockDim.x + threadIdx.x;
+    int numThreads = blockDim.x * blockDim.y;
+    int tileSize   = tileW * tileH;
+
+    for (int i = tid; i < tileSize; i += numThreads) {
+        int ty = i / tileW;
+        int tx = i % tileW;
+        int fy = tileOy + ty;
+        int fx = tileOx + tx;
+
+        if (fy >= 0 && fy < frameH && fx >= 0 && fx < frameW) {
+            shFrame[i] = frame[fy * frameW + fx];
+        } else {
+            shFrame[i] = 0.0f;
+        }
+    }
+    __syncthreads();
+
+    float sum   = 0.0f;
+    float sumSq = 0.0f;
+
+    int localOx = threadIdx.x;
+    int localOy = threadIdx.y;
+
+    for (int dy = 0; dy < templH; ++dy) {
+        int ly = localOy + dy;
+        int tileRow = ly * tileW;
+        int lxBase = localOx;
+        for (int dx = 0; dx < templW; ++dx) {
+            float v = shFrame[tileRow + (lxBase + dx)];
+            sum   += v;
+            sumSq += v * v;
+        }
+    }
+
+    float mean = sum / N;
+    float var  = sumSq / N - mean * mean;
+    float std  = sqrtf(fmaxf(var, 1e-6f));
+
+    float inv_std   = 1.0f / (std + 1e-6f);
+    float inv_t_std = 1.0f / (templStd + 1e-6f);
+
+    float cov = 0.0f;
+    for (int dy = 0; dy < templH; ++dy) {
+        int ly = localOy + dy;
+        int tileRow = ly * tileW;
+        int lxBase = localOx;
+        int templRow = dy * templW;
+        for (int dx = 0; dx < templW; ++dx) {
+            float fv = shFrame[tileRow + (lxBase + dx)];
+            float tv = templ_const[templRow + dx];
+            cov += (fv - mean) * (tv - templMean);
+        }
+    }
+
+    float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
+    out[oy * outW + ox] = ncc;
+}
+
+void ncc_match_naive_cuda(const cv::Mat& frame_gray,
+                          const cv::Mat& templ_gray,
                           cv::Mat& ncc_map)
 {
-    CV_Assert(frame_gray_f32.type() == CV_32FC1);
-    CV_Assert(templ_gray_f32.type() == CV_32FC1);
+    CV_Assert(frame_gray.type() == CV_32FC1);
+    CV_Assert(templ_gray.type() == CV_32FC1);
 
-    int frameW = frame_gray_f32.cols;
-    int frameH = frame_gray_f32.rows;
-    int templW = templ_gray_f32.cols;
-    int templH = templ_gray_f32.rows;
+    int frameW = frame_gray.cols;
+    int frameH = frame_gray.rows;
+    int templW = templ_gray.cols;
+    int templH = templ_gray.rows;
 
     int outW = frameW - templW + 1;
     int outH = frameH - templH + 1;
@@ -228,7 +324,7 @@ void ncc_match_naive_cuda(const cv::Mat& frame_gray_f32,
     ncc_map.create(outH, outW, CV_32FC1);
 
     cv::Scalar mean, stddev;
-    cv::meanStdDev(templ_gray_f32, mean, stddev);
+    cv::meanStdDev(templ_gray, mean, stddev);
     float templMean = static_cast<float>(mean[0]);
     float templStd  = static_cast<float>(stddev[0] + 1e-6f);
 
@@ -242,10 +338,10 @@ void ncc_match_naive_cuda(const cv::Mat& frame_gray_f32,
     checkCuda(cudaMalloc(&d_templ, templSize), "malloc templ");
     checkCuda(cudaMalloc(&d_out,   outSize),   "malloc out");
 
-    checkCuda(cudaMemcpy(d_frame, frame_gray_f32.ptr<float>(),
+    checkCuda(cudaMemcpy(d_frame, frame_gray.ptr<float>(),
                          frameSize, cudaMemcpyHostToDevice),
               "memcpy frame");
-    checkCuda(cudaMemcpy(d_templ, templ_gray_f32.ptr<float>(),
+    checkCuda(cudaMemcpy(d_templ, templ_gray.ptr<float>(),
                          templSize, cudaMemcpyHostToDevice),
               "memcpy templ");
 
@@ -269,17 +365,17 @@ void ncc_match_naive_cuda(const cv::Mat& frame_gray_f32,
     cudaFree(d_out);
 }
 
-void ncc_match_shared_cuda(const cv::Mat& frame_gray_f32,
-                           const cv::Mat& templ_gray_f32,
+void ncc_match_shared_cuda(const cv::Mat& frame_gray,
+                           const cv::Mat& templ_gray,
                            cv::Mat& ncc_map)
 {
-    CV_Assert(frame_gray_f32.type() == CV_32FC1);
-    CV_Assert(templ_gray_f32.type() == CV_32FC1);
+    CV_Assert(frame_gray.type() == CV_32FC1);
+    CV_Assert(templ_gray.type() == CV_32FC1);
 
-    int frameW = frame_gray_f32.cols;
-    int frameH = frame_gray_f32.rows;
-    int templW = templ_gray_f32.cols;
-    int templH = templ_gray_f32.rows;
+    int frameW = frame_gray.cols;
+    int frameH = frame_gray.rows;
+    int templW = templ_gray.cols;
+    int templH = templ_gray.rows;
 
     int outW = frameW - templW + 1;
     int outH = frameH - templH + 1;
@@ -288,7 +384,7 @@ void ncc_match_shared_cuda(const cv::Mat& frame_gray_f32,
     ncc_map.create(outH, outW, CV_32FC1);
 
     cv::Scalar mean, stddev;
-    cv::meanStdDev(templ_gray_f32, mean, stddev);
+    cv::meanStdDev(templ_gray, mean, stddev);
     float templMean = static_cast<float>(mean[0]);
     float templStd  = static_cast<float>(stddev[0] + 1e-6f);
 
@@ -302,10 +398,10 @@ void ncc_match_shared_cuda(const cv::Mat& frame_gray_f32,
     checkCuda(cudaMalloc(&d_templ, templSize), "malloc templ");
     checkCuda(cudaMalloc(&d_out,   outSize),   "malloc out");
 
-    checkCuda(cudaMemcpy(d_frame, frame_gray_f32.ptr<float>(),
+    checkCuda(cudaMemcpy(d_frame, frame_gray.ptr<float>(),
                          frameSize, cudaMemcpyHostToDevice),
               "memcpy frame");
-    checkCuda(cudaMemcpy(d_templ, templ_gray_f32.ptr<float>(),
+    checkCuda(cudaMemcpy(d_templ, templ_gray.ptr<float>(),
                          templSize, cudaMemcpyHostToDevice),
               "memcpy templ");
 
@@ -330,24 +426,24 @@ void ncc_match_shared_cuda(const cv::Mat& frame_gray_f32,
     cudaFree(d_out);
 }
 
-void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
-                                  const cv::Mat& templ_gray_f32,
+void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray,
+                                  const cv::Mat& templ_gray,
                                   std::vector<cv::Mat>& ncc_maps)
 {
-    CV_Assert(!frames_gray_f32.empty());
-    CV_Assert(templ_gray_f32.type() == CV_32FC1);
+    CV_Assert(!frames_gray.empty());
+    CV_Assert(templ_gray.type() == CV_32FC1);
 
-    int numFrames = static_cast<int>(frames_gray_f32.size());
-    int frameW = frames_gray_f32[0].cols;
-    int frameH = frames_gray_f32[0].rows;
+    int numFrames = static_cast<int>(frames_gray.size());
+    int frameW = frames_gray[0].cols;
+    int frameH = frames_gray[0].rows;
 
-    for (const auto& f : frames_gray_f32) {
+    for (const auto& f : frames_gray) {
         CV_Assert(f.type() == CV_32FC1);
         CV_Assert(f.cols == frameW && f.rows == frameH);
     }
 
-    int templW = templ_gray_f32.cols;
-    int templH = templ_gray_f32.rows;
+    int templW = templ_gray.cols;
+    int templH = templ_gray.rows;
 
     int outW = frameW - templW + 1;
     int outH = frameH - templH + 1;
@@ -359,7 +455,7 @@ void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
     }
 
     cv::Scalar mean, stddev;
-    cv::meanStdDev(templ_gray_f32, mean, stddev);
+    cv::meanStdDev(templ_gray, mean, stddev);
     float templMean = static_cast<float>(mean[0]);
     float templStd  = static_cast<float>(stddev[0] + 1e-6f);
 
@@ -374,10 +470,9 @@ void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
     checkCuda(cudaMalloc(&d_templ,  templSize),    "malloc templ (batched)");
     checkCuda(cudaMalloc(&d_out,    outSizeAll),   "malloc out (batched)");
 
-    // Copy all frames into a contiguous host buffer, then to device.
     std::vector<float> h_frames(static_cast<size_t>(frameW) * frameH * numFrames);
     for (int f = 0; f < numFrames; ++f) {
-        const float* src = frames_gray_f32[f].ptr<float>();
+        const float* src = frames_gray[f].ptr<float>();
         float* dst = h_frames.data() + static_cast<size_t>(f) * frameW * frameH;
         std::memcpy(dst, src, frameSizeSingle);
     }
@@ -385,7 +480,7 @@ void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
     checkCuda(cudaMemcpy(d_frames, h_frames.data(), frameSizeAll,
                          cudaMemcpyHostToDevice),
               "memcpy frames (batched)");
-    checkCuda(cudaMemcpy(d_templ, templ_gray_f32.ptr<float>(),
+    checkCuda(cudaMemcpy(d_templ, templ_gray.ptr<float>(),
                          templSize, cudaMemcpyHostToDevice),
               "memcpy templ (batched)");
 
@@ -418,6 +513,137 @@ void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
     cudaFree(d_out);
 }
 
-} // namespace baseline
+void ncc_match_const(const cv::Mat& frame_gray,
+                          const cv::Mat& templ_gray,
+                          cv::Mat& ncc_map)
+{
+    CV_Assert(frame_gray.type() == CV_32FC1);
+    CV_Assert(templ_gray.type() == CV_32FC1);
 
+    int frameW = frame_gray.cols;
+    int frameH = frame_gray.rows;
+    int templW = templ_gray.cols;
+    int templH = templ_gray.rows;
 
+    int outW = frameW - templW + 1;
+    int outH = frameH - templH + 1;
+    CV_Assert(outW > 0 && outH > 0);
+
+    int templPixels = templW * templH;
+    CV_Assert(templPixels <= MAX_TEMPL_PIXELS);  // ensure it fits in const mem
+
+    ncc_map.create(outH, outW, CV_32FC1);
+
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(templ_gray, mean, stddev);
+    float templMean = static_cast<float>(mean[0]);
+    float templStd  = static_cast<float>(stddev[0] + 1e-6f);
+
+    size_t frameSize = static_cast<size_t>(frameW) * frameH * sizeof(float);
+    size_t outSize   = static_cast<size_t>(outW) * outH * sizeof(float);
+
+    float *d_frame = nullptr, *d_out = nullptr;
+
+    checkCuda(cudaMalloc(&d_frame, frameSize), "malloc frame");
+    checkCuda(cudaMalloc(&d_out,   outSize),   "malloc out");
+
+    checkCuda(cudaMemcpy(d_frame, frame_gray.ptr<float>(),
+                         frameSize, cudaMemcpyHostToDevice),
+              "memcpy frame");
+
+    // ----- copy template into constant memory -----
+    checkCuda(cudaMemcpyToSymbol(templ_const,
+                                 templ_gray.ptr<float>(),
+                                 templPixels * sizeof(float), 0,
+                                 cudaMemcpyHostToDevice),
+              "memcpyToSymbol templ");
+
+    dim3 block(32, 8);  // try this, often better than 16x16
+    dim3 grid((outW + block.x - 1) / block.x,
+              (outH + block.y - 1) / block.y);
+
+    nccKernelConst<<<grid, block>>>(
+        d_frame, frameW, frameH,
+        templW, templH,
+        templMean, templStd,
+        d_out, outW, outH
+    );
+    checkCuda(cudaGetLastError(), "kernel launch (const)");
+    checkCuda(cudaDeviceSynchronize(), "kernel sync (const)");
+
+    checkCuda(cudaMemcpy(ncc_map.ptr<float>(), d_out, outSize,
+                         cudaMemcpyDeviceToHost),
+              "memcpy out (const)");
+
+    cudaFree(d_frame);
+    cudaFree(d_out);
+}
+
+void ncc_match_const_tiled(const cv::Mat& frame_gray,
+                               const cv::Mat& templ_gray,
+                               cv::Mat& ncc_map)
+{
+    CV_Assert(frame_gray.type() == CV_32FC1);
+    CV_Assert(templ_gray.type() == CV_32FC1);
+
+    int frameW = frame_gray.cols;
+    int frameH = frame_gray.rows;
+    int templW = templ_gray.cols;
+    int templH = templ_gray.rows;
+
+    int outW = frameW - templW + 1;
+    int outH = frameH - templH + 1;
+    CV_Assert(outW > 0 && outH > 0);
+
+    int templPixels = templW * templH;
+    CV_Assert(templPixels <= MAX_TEMPL_PIXELS);  // ensure it fits in const mem
+
+    ncc_map.create(outH, outW, CV_32FC1);
+
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(templ_gray, mean, stddev);
+    float templMean = static_cast<float>(mean[0]);
+    float templStd  = static_cast<float>(stddev[0] + 1e-6f);
+
+    size_t frameSize = static_cast<size_t>(frameW) * frameH * sizeof(float);
+    size_t outSize   = static_cast<size_t>(outW) * outH * sizeof(float);
+
+    float *d_frame = nullptr, *d_out = nullptr;
+
+    checkCuda(cudaMalloc(&d_frame, frameSize), "malloc frame (tiled)");
+    checkCuda(cudaMalloc(&d_out,   outSize),   "malloc out (tiled)");
+
+    checkCuda(cudaMemcpy(d_frame, frame_gray.ptr<float>(),
+                         frameSize, cudaMemcpyHostToDevice),
+              "memcpy frame (tiled)");
+
+    checkCuda(cudaMemcpyToSymbol(templ_const,
+                                 templ_gray.ptr<float>(),
+                                 templPixels * sizeof(float), 0,
+                                 cudaMemcpyHostToDevice),
+              "memcpyToSymbol templ (tiled)");
+
+    dim3 block(32, 8);
+    dim3 grid((outW + block.x - 1) / block.x,
+              (outH + block.y - 1) / block.y);
+
+    int tileW = block.x + templW - 1;
+    int tileH = block.y + templH - 1;
+    size_t shmemBytes = static_cast<size_t>(tileW) * tileH * sizeof(float);
+
+    nccKernelConstTiled<<<grid, block, shmemBytes>>>(
+        d_frame, frameW, frameH,
+        templW, templH,
+        templMean, templStd,
+        d_out, outW, outH
+    );
+    checkCuda(cudaGetLastError(), "kernel launch (tiled)");
+    checkCuda(cudaDeviceSynchronize(), "kernel sync (tiled)");
+
+    checkCuda(cudaMemcpy(ncc_map.ptr<float>(), d_out, outSize,
+                         cudaMemcpyDeviceToHost),
+              "memcpy out (tiled)");
+
+    cudaFree(d_frame);
+    cudaFree(d_out);
+}
