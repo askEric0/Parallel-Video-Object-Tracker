@@ -90,7 +90,7 @@ bool createVideoWriter(cv::VideoWriter& out,
 {
     auto t0 = Clock::now();
 
-    out.open("../output/output_cpu.mp4",
+    out.open("../output/output_cpu_j.mp4",
              cv::VideoWriter::fourcc('m','p','4','v'),
              fps,
              cv::Size(frame.cols, frame.rows));
@@ -178,7 +178,7 @@ void runTracking(cv::VideoCapture& cap,
 // -------------------- MAIN --------------------
 int main() {
 
-    std::string input_video = "../data/car.mp4";
+    std::string input_video = "../data/jet.mp4";
     std::string input_cache = "../frames/car.cache";
 
     cv::VideoCapture cap;

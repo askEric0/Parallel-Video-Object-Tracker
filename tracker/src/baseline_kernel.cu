@@ -17,6 +17,11 @@
 #include <cmath>
 #include <cstring>  // std::memcpy for batched copies
 
+constexpr int MAX_TEMPL_PIXELS = 4096;
+
+// Read-only template in constant memory
+__constant__ float d_templ_const[MAX_TEMPL_PIXELS];
+
 namespace {
 
 // Convenience wrapper that aborts on CUDA errors and prints a message.
@@ -204,6 +209,59 @@ void nccKernelNaiveBatched(const float* frames, int frameW, int frameH,
     float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
     outFrame[oy * outW + ox] = ncc;
 }
+
+__global__
+void nccKernelConst(const float* frame, int frameW, int frameH,
+                    int templW, int templH,
+                    float templMean, float templStd,
+                    float* out, int outW, int outH)
+{
+    int ox = blockIdx.x * blockDim.x + threadIdx.x;
+    int oy = blockIdx.y * blockDim.y + threadIdx.y;
+    if (ox >= outW || oy >= outH) return;
+
+    const int N = templW * templH;
+
+    float sum   = 0.0f;
+    float sumSq = 0.0f;
+
+    // --------- first pass: mean / std of frame patch ----------
+    for (int dy = 0; dy < templH; ++dy) {
+        int fy        = oy + dy;
+        int frameRow  = fy * frameW;
+        int frameBase = frameRow + ox;
+        for (int dx = 0; dx < templW; ++dx) {
+            float v = frame[frameBase + dx];
+            sum   += v;
+            sumSq += v * v;
+        }
+    }
+
+    float mean = sum / N;
+    float var  = sumSq / N - mean * mean;
+    float std  = sqrtf(fmaxf(var, 1e-6f));
+
+    float inv_std   = 1.0f / (std + 1e-6f);
+    float inv_t_std = 1.0f / (templStd + 1e-6f);
+
+    // --------- second pass: covariance with template ----------
+    float cov = 0.0f;
+    for (int dy = 0; dy < templH; ++dy) {
+        int fy        = oy + dy;
+        int frameRow  = fy * frameW;
+        int frameBase = frameRow + ox;
+        int templRow  = dy * templW;
+        for (int dx = 0; dx < templW; ++dx) {
+            float fv = frame[frameBase + dx];
+            float tv = d_templ_const[templRow + dx];  // <-- from constant memory
+            cov += (fv - mean) * (tv - templMean);
+        }
+    }
+
+    float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
+    out[oy * outW + ox] = ncc;
+}
+
 
 } // anonymous namespace
 
@@ -418,6 +476,75 @@ void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
     cudaFree(d_out);
 }
 
+void ncc_match_const(const cv::Mat& frame_gray_f32,
+                          const cv::Mat& templ_gray_f32,
+                          cv::Mat& ncc_map)
+{
+    CV_Assert(frame_gray_f32.type() == CV_32FC1);
+    CV_Assert(templ_gray_f32.type() == CV_32FC1);
+
+    int frameW = frame_gray_f32.cols;
+    int frameH = frame_gray_f32.rows;
+    int templW = templ_gray_f32.cols;
+    int templH = templ_gray_f32.rows;
+
+    int outW = frameW - templW + 1;
+    int outH = frameH - templH + 1;
+    CV_Assert(outW > 0 && outH > 0);
+
+    int templPixels = templW * templH;
+    CV_Assert(templPixels <= MAX_TEMPL_PIXELS);  // ensure it fits in const mem
+
+    ncc_map.create(outH, outW, CV_32FC1);
+
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(templ_gray_f32, mean, stddev);
+    float templMean = static_cast<float>(mean[0]);
+    float templStd  = static_cast<float>(stddev[0] + 1e-6f);
+
+    size_t frameSize = static_cast<size_t>(frameW) * frameH * sizeof(float);
+    size_t outSize   = static_cast<size_t>(outW) * outH * sizeof(float);
+
+    float *d_frame = nullptr, *d_out = nullptr;
+
+    checkCuda(cudaMalloc(&d_frame, frameSize), "malloc frame");
+    checkCuda(cudaMalloc(&d_out,   outSize),   "malloc out");
+
+    checkCuda(cudaMemcpy(d_frame, frame_gray_f32.ptr<float>(),
+                         frameSize, cudaMemcpyHostToDevice),
+              "memcpy frame");
+
+    // ----- copy template into constant memory -----
+    checkCuda(cudaMemcpyToSymbol(d_templ_const,
+                                 templ_gray_f32.ptr<float>(),
+                                 templPixels * sizeof(float), 0,
+                                 cudaMemcpyHostToDevice),
+              "memcpyToSymbol templ");
+
+    dim3 block(32, 8);  // try this, often better than 16x16
+    dim3 grid((outW + block.x - 1) / block.x,
+              (outH + block.y - 1) / block.y);
+
+    nccKernelConst<<<grid, block>>>(
+        d_frame, frameW, frameH,
+        templW, templH,
+        templMean, templStd,
+        d_out, outW, outH
+    );
+    checkCuda(cudaGetLastError(), "kernel launch (const)");
+    checkCuda(cudaDeviceSynchronize(), "kernel sync (const)");
+
+    checkCuda(cudaMemcpy(ncc_map.ptr<float>(), d_out, outSize,
+                         cudaMemcpyDeviceToHost),
+              "memcpy out (const)");
+
+    cudaFree(d_frame);
+    cudaFree(d_out);
+}
+
+
+
 } // namespace baseline
+
 
 
