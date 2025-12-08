@@ -34,5 +34,8 @@ void ncc_match_naive_cuda_batched(const std::vector<cv::Mat>& frames_gray_f32,
 
 void ncc_match_const(const cv::Mat& frame_gray_f32,
                                const cv::Mat& templ_gray_f32,
-                               cv::Mat& ncc_map) ;                           
+                               cv::Mat& ncc_map) ;    
+void ncc_match_const_tiled(const cv::Mat& frame_gray_f32,
+                               const cv::Mat& templ_gray_f32,
+                               cv::Mat& ncc_map)     ;                  
 } // namespace baseline

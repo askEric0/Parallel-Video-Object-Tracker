@@ -261,6 +261,96 @@ void nccKernelConst(const float* frame, int frameW, int frameH,
     float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
     out[oy * outW + ox] = ncc;
 }
+__global__
+void nccKernelConstTiled(const float* frame, int frameW, int frameH,
+                         int templW, int templH,
+                         float templMean, float templStd,
+                         float* out, int outW, int outH)
+{
+    int ox = blockIdx.x * blockDim.x + threadIdx.x;
+    int oy = blockIdx.y * blockDim.y + threadIdx.y;
+    if (ox >= outW || oy >= outH) return;
+
+    const int N = templW * templH;
+
+    // ------------------------
+    // 1) Load frame tile into shared memory
+    //    Tile covers ALL pixels any thread in this block needs.
+    // ------------------------
+    int tileOx = blockIdx.x * blockDim.x;
+    int tileOy = blockIdx.y * blockDim.y;
+
+    int tileW = blockDim.x + templW - 1;
+    int tileH = blockDim.y + templH - 1;
+
+    extern __shared__ float shFrame[]; // size = tileW * tileH
+
+    int tid       = threadIdx.y * blockDim.x + threadIdx.x;
+    int numThreads = blockDim.x * blockDim.y;
+    int tileSize   = tileW * tileH;
+
+    for (int i = tid; i < tileSize; i += numThreads) {
+        int ty = i / tileW;
+        int tx = i % tileW;
+        int fy = tileOy + ty;
+        int fx = tileOx + tx;
+
+        if (fy >= 0 && fy < frameH && fx >= 0 && fx < frameW) {
+            shFrame[i] = frame[fy * frameW + fx];
+        } else {
+            shFrame[i] = 0.0f; // safe guard, though shouldn't really hit
+        }
+    }
+    __syncthreads();
+
+    // ------------------------
+    // 2) First pass: mean / std of patch under (ox, oy)
+    //    All reads now come from shared memory tile.
+    // ------------------------
+    float sum   = 0.0f;
+    float sumSq = 0.0f;
+
+    // local coordinates of this thread's output inside the tile
+    int localOx = threadIdx.x;
+    int localOy = threadIdx.y;
+
+    for (int dy = 0; dy < templH; ++dy) {
+        int ly = localOy + dy;             // tile row index
+        int tileRow = ly * tileW;
+        int lxBase = localOx;
+        for (int dx = 0; dx < templW; ++dx) {
+            float v = shFrame[tileRow + (lxBase + dx)];
+            sum   += v;
+            sumSq += v * v;
+        }
+    }
+
+    float mean = sum / N;
+    float var  = sumSq / N - mean * mean;
+    float std  = sqrtf(fmaxf(var, 1e-6f));
+
+    float inv_std   = 1.0f / (std + 1e-6f);
+    float inv_t_std = 1.0f / (templStd + 1e-6f);
+
+    // ------------------------
+    // 3) Second pass: covariance with template (in constant memory)
+    // ------------------------
+    float cov = 0.0f;
+    for (int dy = 0; dy < templH; ++dy) {
+        int ly = localOy + dy;
+        int tileRow = ly * tileW;
+        int lxBase = localOx;
+        int templRow = dy * templW;
+        for (int dx = 0; dx < templW; ++dx) {
+            float fv = shFrame[tileRow + (lxBase + dx)];
+            float tv = d_templ_const[templRow + dx];
+            cov += (fv - mean) * (tv - templMean);
+        }
+    }
+
+    float ncc = cov * inv_std * inv_t_std / static_cast<float>(N);
+    out[oy * outW + ox] = ncc;
+}
 
 
 } // anonymous namespace
@@ -542,6 +632,76 @@ void ncc_match_const(const cv::Mat& frame_gray_f32,
     cudaFree(d_out);
 }
 
+void ncc_match_const_tiled(const cv::Mat& frame_gray_f32,
+                               const cv::Mat& templ_gray_f32,
+                               cv::Mat& ncc_map)
+{
+    CV_Assert(frame_gray_f32.type() == CV_32FC1);
+    CV_Assert(templ_gray_f32.type() == CV_32FC1);
+
+    int frameW = frame_gray_f32.cols;
+    int frameH = frame_gray_f32.rows;
+    int templW = templ_gray_f32.cols;
+    int templH = templ_gray_f32.rows;
+
+    int outW = frameW - templW + 1;
+    int outH = frameH - templH + 1;
+    CV_Assert(outW > 0 && outH > 0);
+
+    int templPixels = templW * templH;
+    CV_Assert(templPixels <= MAX_TEMPL_PIXELS);  // ensure it fits in const mem
+
+    ncc_map.create(outH, outW, CV_32FC1);
+
+    cv::Scalar mean, stddev;
+    cv::meanStdDev(templ_gray_f32, mean, stddev);
+    float templMean = static_cast<float>(mean[0]);
+    float templStd  = static_cast<float>(stddev[0] + 1e-6f);
+
+    size_t frameSize = static_cast<size_t>(frameW) * frameH * sizeof(float);
+    size_t outSize   = static_cast<size_t>(outW) * outH * sizeof(float);
+
+    float *d_frame = nullptr, *d_out = nullptr;
+
+    checkCuda(cudaMalloc(&d_frame, frameSize), "malloc frame (tiled)");
+    checkCuda(cudaMalloc(&d_out,   outSize),   "malloc out (tiled)");
+
+    checkCuda(cudaMemcpy(d_frame, frame_gray_f32.ptr<float>(),
+                         frameSize, cudaMemcpyHostToDevice),
+              "memcpy frame (tiled)");
+
+    // Copy template into constant memory
+    checkCuda(cudaMemcpyToSymbol(d_templ_const,
+                                 templ_gray_f32.ptr<float>(),
+                                 templPixels * sizeof(float), 0,
+                                 cudaMemcpyHostToDevice),
+              "memcpyToSymbol templ (tiled)");
+
+    // Choose a good block size for warps
+    dim3 block(32, 8);  // 256 threads, warp-aligned in X
+    dim3 grid((outW + block.x - 1) / block.x,
+              (outH + block.y - 1) / block.y);
+
+    int tileW = block.x + templW - 1;
+    int tileH = block.y + templH - 1;
+    size_t shmemBytes = static_cast<size_t>(tileW) * tileH * sizeof(float);
+
+    nccKernelConstTiled<<<grid, block, shmemBytes>>>(
+        d_frame, frameW, frameH,
+        templW, templH,
+        templMean, templStd,
+        d_out, outW, outH
+    );
+    checkCuda(cudaGetLastError(), "kernel launch (tiled)");
+    checkCuda(cudaDeviceSynchronize(), "kernel sync (tiled)");
+
+    checkCuda(cudaMemcpy(ncc_map.ptr<float>(), d_out, outSize,
+                         cudaMemcpyDeviceToHost),
+              "memcpy out (tiled)");
+
+    cudaFree(d_frame);
+    cudaFree(d_out);
+}
 
 
 } // namespace baseline

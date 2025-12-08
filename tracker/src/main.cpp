@@ -45,6 +45,7 @@ int main(int argc, char** argv)
         if (arg == "--cpu") mode = "cpu";
         else if (arg == "--shared") mode = "shared";
         else if (arg == "--const") mode = "const";
+        else if (arg == "--const_tiled") mode = "const_tiled";
         else if (arg.rfind("--batch=", 0) == 0) {
             mode = "batch";
             batch = std::max(1, std::atoi(arg.substr(8).c_str()));
@@ -138,6 +139,9 @@ int main(int argc, char** argv)
         }
         else if (mode == "const") {
             baseline::ncc_match_const(frame_gray_f32, templ_gray_f32, ncc_map);
+        }
+        else if (mode == "const_tiled") {
+            baseline::ncc_match_const_tiled(frame_gray_f32, templ_gray_f32, ncc_map);
         }
         else if (mode == "batch") {
             batch_frames.push_back(frame_gray_f32.clone());
