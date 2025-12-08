@@ -3,35 +3,23 @@
 #include "baseline_kernel.hpp"
 #include "utils.hpp"
 
-// ======================================================
-// USER CONFIGURATION (CHANGE THESE ONLY)
-// ======================================================
 static const std::string INPUT_VIDEO = "../data/car.mp4";
 
-// Choose ONE mode:
-//   "naive"   → baseline CUDA
-//   "cpu"     → OpenCV CPU NCC
-//   "shared"  → shared-memory CUDA kernel
-//   "const"   → optimized const memory CUDA kernel
-//   "batch"   → batched CUDA naive kernel
 static const std::string NCC_MODE = "naive";  
 
-// Batch size (only used if NCC_MODE == "batch")
+// Batch size
 static const int BATCH_SIZE = 4;
 
-// Search window for NCC peak
+// Search window
 static const int SEARCH_RADIUS_X = 80;
 static const int SEARCH_RADIUS_Y = 80;
 
-// Confidence thresholds
+// Confidence 
 static const double NCC_MIN_CONFIDENCE    = 0.40;
 static const double NCC_STRONG_CONFIDENCE = 0.70;
 static const double TEMPLATE_UPDATE_LR    = 0.10;
 
 
-// ======================================================
-// TRACKER
-// ======================================================
 int main(int argc, char** argv)
 {
 
@@ -52,17 +40,15 @@ int main(int argc, char** argv)
         }
     }
 
-    std::cout << "============================================\n";
+    std::cout << "--------\n";
     std::cout << "NCC Tracker Starting\n";
     std::cout << "Input video : " << INPUT_VIDEO << "\n";
     std::cout << "Mode        : " << mode << "\n";
     if (mode == "batch")
         std::cout << "Batch size  : " << batch << "\n";
-    std::cout << "============================================\n\n";
+    std::cout << "--------\n\n";
 
-    // ------------------------
-    // LOAD VIDEO
-    // ------------------------
+    // Load input video
     cv::VideoCapture cap(INPUT_VIDEO);
     if (!cap.isOpened()) {
         std::cerr << "Cannot open video.\n";
@@ -73,9 +59,7 @@ int main(int argc, char** argv)
     cap >> frame;
     if (frame.empty()) return -1;
 
-    // ------------------------
-    // SELECT ROI
-    // ------------------------
+    // ROI
     cv::Rect bbox = cv::selectROI("Select Object", frame, false);
     cv::destroyWindow("Select Object");
 
@@ -83,43 +67,28 @@ int main(int argc, char** argv)
         std::cerr << " No ROI selected.\n";
         return -1;
     }
-
-    // ------------------------
-    // INITIAL TEMPLATE
-    // ------------------------
     cv::Mat frame_gray_f32 = toGrayF32(frame);
     cv::Mat templ_gray_f32 = frame_gray_f32(bbox).clone();
 
-    // ------------------------
-    // VIDEO OUTPUT
-    // ------------------------
     double fps_video = cap.get(cv::CAP_PROP_FPS);
     if (fps_video <= 1) fps_video = 30;
 
-    cv::VideoWriter writer("../output/output_tracker.mp4",
-                           cv::VideoWriter::fourcc('m','p','4','v'),
-                           fps_video,
-                           cv::Size(frame.cols, frame.rows));
+    cv::VideoWriter writer("../output/output_tracker.mp4", cv::VideoWriter::fourcc('m','p','4','v'),
+                           fps_video, cv::Size(frame.cols, frame.rows));
 
     if (!writer.isOpened()) {
         std::cerr << " Cannot open video writer.\n";
         return -1;
     }
 
-    // ------------------------
-    // For batch mode
-    // ------------------------
     std::vector<cv::Mat> batch_frames;
     std::vector<cv::Mat> batch_ncc;
-    if (mode == "batch")
-        batch_frames.reserve(batch);
+    if (mode == "batch") batch_frames.reserve(batch);
 
     int frame_count = 0;
     double t_start = (double)cv::getTickCount();
 
-    // ======================================================
-    // MAIN LOOP
-    // ======================================================
+    // Loop over video frames
     while (true)
     {
         cap >> frame;
@@ -128,9 +97,6 @@ int main(int argc, char** argv)
         frame_gray_f32 = toGrayF32(frame);
         cv::Mat ncc_map;
 
-        // -----------------------------------------
-        // MODE DISPATCH
-        // -----------------------------------------
         if (mode == "cpu") {
             baseline::ncc_match_cpu(frame_gray_f32, templ_gray_f32, ncc_map);
         }
@@ -153,22 +119,16 @@ int main(int argc, char** argv)
                 continue;
             }
 
-            baseline::ncc_match_naive_cuda_batched(batch_frames,
-                                                   templ_gray_f32,
-                                                   batch_ncc);
+            baseline::ncc_match_naive_cuda_batched(batch_frames,templ_gray_f32,batch_ncc);
 
             ncc_map = batch_ncc.back();
             batch_frames.clear();
             batch_ncc.clear();
         }
         else {
-            // DEFAULT → naive CUDA
             baseline::ncc_match_naive_cuda(frame_gray_f32, templ_gray_f32, ncc_map);
         }
 
-        // ======================================================
-        // LOCAL SEARCH WINDOW
-        // ======================================================
         int cx = bbox.x + bbox.width / 2;
         int cy = bbox.y + bbox.height / 2;
 
@@ -187,18 +147,13 @@ int main(int argc, char** argv)
         cv::minMaxLoc(ncc_map(roi), nullptr, &bestVal, nullptr, &bestLoc);
         bestLoc += roi.tl();
 
-        // ======================================================
-        // UPDATE BBOX + ADAPTIVE TEMPLATE
-        // ======================================================
         if (bestVal >= NCC_MIN_CONFIDENCE) {
             bbox.x = bestLoc.x;
             bbox.y = bestLoc.y;
 
             if (bestVal >= NCC_STRONG_CONFIDENCE) {
                 cv::Mat new_patch = frame_gray_f32(bbox).clone();
-                cv::addWeighted(templ_gray_f32, 1 - TEMPLATE_UPDATE_LR,
-                                new_patch, TEMPLATE_UPDATE_LR,
-                                0.0, templ_gray_f32);
+                cv::addWeighted(templ_gray_f32, 1 - TEMPLATE_UPDATE_LR, new_patch, TEMPLATE_UPDATE_LR,  0.0, templ_gray_f32);
             }
         }
 
@@ -207,20 +162,17 @@ int main(int argc, char** argv)
         frame_count++;
     }
 
-    // ======================================================
-    // SUMMARY
-    // ======================================================
     double t_end = (double)cv::getTickCount();
     double elapsed = (t_end - t_start) / cv::getTickFrequency();
     double fps = frame_count / elapsed;
 
-    std::cout << "\n============================================\n";
+    std::cout << "\n--------\n";
     std::cout << " Tracking Complete\n";
     std::cout << " Mode       : " << mode << "\n";
     std::cout << " Frames     : " << frame_count << "\n";
     std::cout << " Time (sec) : " << elapsed << "\n";
     std::cout << " FPS        : " << fps << "\n";
-    std::cout << "============================================\n";
+    std::cout << "--------\n";
 
     return 0;
 }

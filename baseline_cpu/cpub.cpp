@@ -57,7 +57,6 @@ bool loadCachedVideo(const std::string& path, std::vector<cv::Mat>& frames, doub
     return true;
 }
 
-// -------------------- ROI selection --------------------
 cv::Rect selectInitialROI(const cv::Mat& frame, double& time_ms) {
     auto t0 = Clock::now();
     cv::Rect bbox = cv::selectROI("Select Object", frame, false);
@@ -68,10 +67,7 @@ cv::Rect selectInitialROI(const cv::Mat& frame, double& time_ms) {
     return bbox;
 }
 
-// -------------------- Tracker creation --------------------
-cv::Ptr<cv::Tracker> createTracker(const cv::Mat& frame,
-                                   const cv::Rect& bbox,
-                                   double& time_ms)
+cv::Ptr<cv::Tracker> createTracker(const cv::Mat& frame, const cv::Rect& bbox,  double& time_ms)
 {
     auto t0 = Clock::now();
     auto tracker = cv::TrackerCSRT::create();
@@ -82,18 +78,11 @@ cv::Ptr<cv::Tracker> createTracker(const cv::Mat& frame,
     return tracker;
 }
 
-// -------------------- Output writer --------------------
-bool createVideoWriter(cv::VideoWriter& out,
-                       const cv::Mat& frame,
-                       double fps,
-                       double& time_ms)
+bool createVideoWriter(cv::VideoWriter& out,  const cv::Mat& frame,  double fps, double& time_ms)
 {
     auto t0 = Clock::now();
 
-    out.open("../output/output_cpu_j.mp4",
-             cv::VideoWriter::fourcc('m','p','4','v'),
-             fps,
-             cv::Size(frame.cols, frame.rows));
+    out.open("../output/output_cpu.mp4", cv::VideoWriter::fourcc('m','p','4','v'), fps, cv::Size(frame.cols, frame.rows));
 
     auto t1 = Clock::now();
     time_ms = ms(t1 - t0).count();
@@ -105,11 +94,7 @@ bool createVideoWriter(cv::VideoWriter& out,
     return true;
 }
 
-// -------------------- Tracking Loop (Fully Timed) --------------------
-void runTracking(cv::VideoCapture& cap,
-                 cv::VideoWriter& out,
-                 cv::Ptr<cv::Tracker>& tracker,
-                 cv::Rect& bbox)
+void runTracking(cv::VideoCapture& cap, cv::VideoWriter& out, cv::Ptr<cv::Tracker>& tracker, cv::Rect& bbox)
 {
     cv::Mat frame;
 
@@ -122,24 +107,17 @@ void runTracking(cv::VideoCapture& cap,
     auto total_t0 = Clock::now();
 
     while (true) {
-
-        // -------- Frame Decode --------
         auto t0 = Clock::now();
         cap >> frame;
         auto t1 = Clock::now();
         if (frame.empty()) break;
         t_decode += ms(t1 - t0).count();
-
-        // -------- Tracker Update --------
         auto t2 = Clock::now();
         bool success = tracker->update(frame, bbox);
         auto t3 = Clock::now();
         t_track += ms(t3 - t2).count();
-
-        // -------- Drawing --------
         auto t4 = Clock::now();
-        if (success)
-            cv::rectangle(frame, bbox, cv::Scalar(0, 0, 255), 2);
+        if (success) cv::rectangle(frame, bbox, cv::Scalar(0, 0, 255), 2);
 
         cv::putText(frame,
                     success ? "Tracking" : "Lost",
@@ -149,7 +127,6 @@ void runTracking(cv::VideoCapture& cap,
         auto t5 = Clock::now();
         t_draw += ms(t5 - t4).count();
 
-        // -------- Video Write --------
         auto t6 = Clock::now();
         out.write(frame);
         auto t7 = Clock::now();
@@ -161,24 +138,22 @@ void runTracking(cv::VideoCapture& cap,
     auto total_t1 = Clock::now();
     double total_ms = ms(total_t1 - total_t0).count();
 
-    // -------- FINAL REPORT --------
-    std::cout << "\n================ CPU PROFILING ================\n";
+    std::cout << "\n--------CPU_Baseline--------\n";
     std::cout << "Frames processed  : " << frame_count << "\n";
     std::cout << "Total time        : " << total_ms << " ms\n";
     std::cout << "Average FPS       : " << (1000.0 * frame_count / total_ms) << "\n\n";
-
     std::cout << "Decode time       : " << t_decode << " ms\n";
     std::cout << "Tracker time      : " << t_track  << " ms\n";
     std::cout << "Drawing time      : " << t_draw   << " ms\n";
     std::cout << "Write time        : " << t_write  << " ms\n";
 
-    std::cout << "===============================================\n";
+    std::cout << "------------------------------\n";
 }
 
 // -------------------- MAIN --------------------
 int main() {
 
-    std::string input_video = "../data/jet.mp4";
+    std::string input_video = "../data/car.mp4";
     std::string input_cache = "../frames/car.cache";
 
     cv::VideoCapture cap;
@@ -200,25 +175,19 @@ int main() {
             return -1;
     }
 
-    // -------- ROI --------
     cv::Rect bbox = selectInitialROI(firstFrame, t_roi);
-
-    // -------- Tracker Init --------
     auto tracker = createTracker(firstFrame, bbox, t_tracker);
-
-    // -------- Writer Init --------
     cv::VideoWriter out;
     double fps_video = use_cache ? 30.0 : cap.get(cv::CAP_PROP_FPS);
-    if (!createVideoWriter(out, firstFrame, fps_video, t_writer))
-        return -1;
+    if (!createVideoWriter(out, firstFrame, fps_video, t_writer)) return -1;
 
-    std::cout << "\n=========== SETUP PROFILING ===========\n";
+    std::cout << "\n--init--\n";
     std::cout << "Cache load time  : " << t_cache   << " ms\n";
     std::cout << "Video open time  : " << t_open    << " ms\n";
     std::cout << "ROI select time  : " << t_roi     << " ms\n";
     std::cout << "Tracker init     : " << t_tracker << " ms\n";
     std::cout << "Writer init      : " << t_writer  << " ms\n";
-    std::cout << "======================================\n";
+    std::cout << "--------\n";
 
     if (!use_cache)
         runTracking(cap, out, tracker, bbox);
