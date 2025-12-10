@@ -201,8 +201,8 @@ static int demo_tracker(const std::string& video_path, std::string mode, bool fi
             int searchH = maxTy - minTy + 1;
 
             if (searchW > 0 && searchH > 0) {
-                cv::Rect search_region(minTx, minTy, searchW, searchH);
-                cv::Mat ncc_roi = ncc_map(search_region);
+                cv::Rect local_region(minTx, minTy, searchW, searchH);
+                cv::Mat ncc_roi = ncc_map(local_region);
                 double min_val, max_val;
                 cv::Point min_loc, max_loc;
                 cv::minMaxLoc(ncc_roi, &min_val, &max_val, &min_loc, &max_loc);
@@ -429,8 +429,8 @@ static int record_tracker(const std::string& video_path, std::string mode, int b
             int searchH = maxTy - minTy + 1;
             // If the search window is valid, find the best match in the search window.
             if (searchW > 0 && searchH > 0) {
-                cv::Rect ncc_search_roi(minTx, minTy, searchW, searchH);
-                cv::Mat ncc_roi = ncc_map(ncc_search_roi);
+                cv::Rect local_region(minTx, minTy, searchW, searchH);
+                cv::Mat ncc_roi = ncc_map(local_region);
                 double min_val, max_val;
                 cv::Point min_loc, max_loc;
                 cv::minMaxLoc(ncc_roi, &min_val, &max_val, &min_loc, &max_loc);
