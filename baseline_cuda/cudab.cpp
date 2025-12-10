@@ -58,6 +58,7 @@ int main() {
 
     int frame_count = 0;
     auto t0 = chrono::high_resolution_clock::now();
+    double tot = 0.0;
 
     while (true) {
         Mat frame;
@@ -66,6 +67,8 @@ int main() {
 
         cvtColor(frame, curr_gray, COLOR_BGR2GRAY);
         d_curr.upload(curr_gray);
+
+        auto t4 = chrono::high_resolution_clock::now();
 
         flow->calc(d_prev, d_curr, d_flow);
 
@@ -99,8 +102,13 @@ int main() {
             bbox = clampBBox(bbox, W, H);
         }
 
+
+
         rectangle(frame, bbox, Scalar(0,0,255), 2);
         putText(frame, "PURE CUDA FLOW", {20,30}, FONT_HERSHEY_SIMPLEX, 0.8, {0,255,0}, 2);
+
+        auto t3 = chrono::high_resolution_clock::now();
+        tot += chrono::duration<double, milli>(t3 - t4).count();
 
         out.write(frame);
         d_curr.copyTo(d_prev);
@@ -113,6 +121,7 @@ int main() {
     cout << "\n Pure Cuda optical Flow baseline\n";
     cout << "Frames  : " << frame_count << endl;
     cout << "Time ms : " << total_ms << endl;
+    cout << "Time computation s : " << tot << endl;
     cout << "FPS     : " << (1000.0 * frame_count / total_ms) << endl;
 
     return 0;

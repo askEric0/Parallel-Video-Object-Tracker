@@ -87,6 +87,7 @@ int main(int argc, char** argv)
 
     int frame_count = 0;
     double t_start = (double)cv::getTickCount();
+    double t_tot = 0.0;
 
     // Loop over video frames
     while (true)
@@ -96,6 +97,8 @@ int main(int argc, char** argv)
 
         frame_gray_f32 = toGrayF32(frame);
         cv::Mat ncc_map;
+
+        double t1 = (double)cv::getTickCount();
 
         if (mode == "cpu") {
             baseline::ncc_match_cpu(frame_gray_f32, templ_gray_f32, ncc_map);
@@ -157,6 +160,9 @@ int main(int argc, char** argv)
             }
         }
 
+        double t2 = (double)cv::getTickCount();
+        t_tot += (t2 - t1) / cv::getTickFrequency();
+
         cv::rectangle(frame, bbox, {0,255,0}, 2);
         writer.write(frame);
         frame_count++;
@@ -171,6 +177,7 @@ int main(int argc, char** argv)
     std::cout << " Mode       : " << mode << "\n";
     std::cout << " Frames     : " << frame_count << "\n";
     std::cout << " Time (sec) : " << elapsed << "\n";
+    std::cout << " Computation Time (sec)  : " << t_tot << "\n";
     std::cout << " FPS        : " << fps << "\n";
     std::cout << "--------\n";
 
