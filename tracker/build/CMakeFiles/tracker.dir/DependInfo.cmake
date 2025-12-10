@@ -10,7 +10,6 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/baseline_kernel.cu" "CMakeFiles/tracker.dir/src/baseline_kernel.cu.o" "gcc" "CMakeFiles/tracker.dir/src/baseline_kernel.cu.o.d"
   "/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/main.cpp" "CMakeFiles/tracker.dir/src/main.cpp.o" "gcc" "CMakeFiles/tracker.dir/src/main.cpp.o.d"
-  "/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp" "CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o" "gcc" "CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

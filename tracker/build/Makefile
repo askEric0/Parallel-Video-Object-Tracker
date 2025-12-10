@@ -177,30 +177,6 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tracker.dir/build.make CMakeFiles/tracker.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-src/ncc_cpu.o: src/ncc_cpu.cpp.o
-.PHONY : src/ncc_cpu.o
-
-# target to build an object file
-src/ncc_cpu.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tracker.dir/build.make CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o
-.PHONY : src/ncc_cpu.cpp.o
-
-src/ncc_cpu.i: src/ncc_cpu.cpp.i
-.PHONY : src/ncc_cpu.i
-
-# target to preprocess a source file
-src/ncc_cpu.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tracker.dir/build.make CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i
-.PHONY : src/ncc_cpu.cpp.i
-
-src/ncc_cpu.s: src/ncc_cpu.cpp.s
-.PHONY : src/ncc_cpu.s
-
-# target to generate assembly for a file
-src/ncc_cpu.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tracker.dir/build.make CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s
-.PHONY : src/ncc_cpu.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -216,9 +192,6 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/ncc_cpu.o"
-	@echo "... src/ncc_cpu.i"
-	@echo "... src/ncc_cpu.s"
 .PHONY : help
 
 

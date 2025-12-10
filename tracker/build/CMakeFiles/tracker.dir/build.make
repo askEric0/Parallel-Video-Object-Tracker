@@ -98,93 +98,80 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CUDA source to assembly CMakeFiles/tracker.dir/src/baseline_kernel.cu.s"
 	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
 
-CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: CMakeFiles/tracker.dir/flags.make
-CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp
-CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o: CMakeFiles/tracker.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o -MF CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o.d -o CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o -c /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp
-
-CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp > CMakeFiles/tracker.dir/src/ncc_cpu.cpp.i
-
-CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/src/ncc_cpu.cpp -o CMakeFiles/tracker.dir/src/ncc_cpu.cpp.s
-
 # Object files for target tracker
 tracker_OBJECTS = \
 "CMakeFiles/tracker.dir/src/main.cpp.o" \
-"CMakeFiles/tracker.dir/src/baseline_kernel.cu.o" \
-"CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o"
+"CMakeFiles/tracker.dir/src/baseline_kernel.cu.o"
 
 # External object files for target tracker
 tracker_EXTERNAL_OBJECTS =
 
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/src/main.cpp.o
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/src/baseline_kernel.cu.o
-CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/build.make
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_gapi.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_stitching.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_alphamat.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_aruco.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_barcode.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_bgsegm.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_bioinspired.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_ccalib.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_cvv.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dnn_objdetect.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dnn_superres.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dpm.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_face.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_freetype.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_fuzzy.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_hdf.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_hfs.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_img_hash.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_intensity_transform.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_line_descriptor.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_mcc.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_quality.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_rapid.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_reg.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_rgbd.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_saliency.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_stereo.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_structured_light.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_superres.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_surface_matching.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_tracking.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_videostab.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_wechat_qrcode.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_xfeatures2d.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_xobjdetect.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_xphoto.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_shape.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_highgui.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_datasets.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_plot.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_text.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_ml.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_phase_unwrapping.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_optflow.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_ximgproc.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_video.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_videoio.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dnn.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_imgcodecs.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_objdetect.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_calib3d.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_features2d.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_flann.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_photo.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_imgproc.so.4.5.3
-CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_core.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_gapi.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_stitching.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_alphamat.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_aruco.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_barcode.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_bgsegm.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_bioinspired.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_ccalib.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_cvv.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dnn_objdetect.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dnn_superres.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dpm.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_face.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_freetype.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_fuzzy.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_hdf.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_hfs.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_img_hash.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_intensity_transform.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_line_descriptor.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_mcc.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_quality.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_rapid.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_reg.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_rgbd.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_saliency.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_stereo.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_structured_light.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_superres.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_surface_matching.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_tracking.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_videostab.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_wechat_qrcode.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_xfeatures2d.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_xobjdetect.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_xphoto.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libjpeg.so.9
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libjasper.so.1
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libQt5Test.so.5
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_shape.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_highgui.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_datasets.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_plot.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_text.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_ml.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_phase_unwrapping.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_optflow.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_ximgproc.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_video.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_videoio.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dnn.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_imgcodecs.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_objdetect.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_calib3d.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_features2d.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_flann.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_photo.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_imgproc.so.4.5.3
+CMakeFiles/tracker.dir/cmake_device_link.o: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_core.so.4.5.3
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/deviceLinkLibs.rsp
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/deviceObjects1.rsp
 CMakeFiles/tracker.dir/cmake_device_link.o: CMakeFiles/tracker.dir/dlink.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CUDA device code CMakeFiles/tracker.dir/cmake_device_link.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CUDA device code CMakeFiles/tracker.dir/cmake_device_link.o"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tracker.dir/dlink.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -194,75 +181,76 @@ CMakeFiles/tracker.dir/build: CMakeFiles/tracker.dir/cmake_device_link.o
 # Object files for target tracker
 tracker_OBJECTS = \
 "CMakeFiles/tracker.dir/src/main.cpp.o" \
-"CMakeFiles/tracker.dir/src/baseline_kernel.cu.o" \
-"CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o"
+"CMakeFiles/tracker.dir/src/baseline_kernel.cu.o"
 
 # External object files for target tracker
 tracker_EXTERNAL_OBJECTS =
 
 tracker: CMakeFiles/tracker.dir/src/main.cpp.o
 tracker: CMakeFiles/tracker.dir/src/baseline_kernel.cu.o
-tracker: CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o
 tracker: CMakeFiles/tracker.dir/build.make
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_gapi.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_stitching.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_alphamat.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_aruco.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_barcode.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_bgsegm.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_bioinspired.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_ccalib.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_cvv.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dnn_objdetect.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dnn_superres.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dpm.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_face.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_freetype.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_fuzzy.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_hdf.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_hfs.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_img_hash.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_intensity_transform.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_line_descriptor.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_mcc.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_quality.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_rapid.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_reg.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_rgbd.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_saliency.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_stereo.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_structured_light.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_superres.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_surface_matching.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_tracking.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_videostab.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_wechat_qrcode.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_xfeatures2d.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_xobjdetect.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_xphoto.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_shape.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_highgui.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_datasets.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_plot.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_text.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_ml.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_phase_unwrapping.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_optflow.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_ximgproc.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_video.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_videoio.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_dnn.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_imgcodecs.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_objdetect.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_calib3d.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_features2d.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_flann.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_photo.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_imgproc.so.4.5.3
-tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libopencv_core.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_gapi.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_stitching.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_alphamat.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_aruco.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_barcode.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_bgsegm.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_bioinspired.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_ccalib.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_cvv.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dnn_objdetect.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dnn_superres.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dpm.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_face.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_freetype.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_fuzzy.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_hdf.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_hfs.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_img_hash.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_intensity_transform.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_line_descriptor.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_mcc.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_quality.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_rapid.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_reg.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_rgbd.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_saliency.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_stereo.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_structured_light.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_superres.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_surface_matching.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_tracking.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_videostab.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_wechat_qrcode.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_xfeatures2d.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_xobjdetect.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_xphoto.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libjpeg.so.9
+tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libjasper.so.1
+tracker: /usr/local/depot/fsl/fslpython/envs/fslpython/lib/libQt5Test.so.5
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_shape.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_highgui.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_datasets.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_plot.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_text.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_ml.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_phase_unwrapping.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_optflow.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_ximgproc.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_video.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_videoio.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_dnn.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_imgcodecs.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_objdetect.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_calib3d.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_features2d.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_flann.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_photo.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_imgproc.so.4.5.3
+tracker: /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/lib/libopencv_core.so.4.5.3
 tracker: CMakeFiles/tracker.dir/cmake_device_link.o
 tracker: CMakeFiles/tracker.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable tracker"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable tracker"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tracker.dir/link.txt --verbose=$(VERBOSE)
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold "Setting library search path: system libstdc++ first, then OpenCV"
 	chrpath -r /usr/lib/gcc/x86_64-linux-gnu/11:/usr/local/depot/fsl/fslpython/envs/fslpython/lib /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/build/tracker 2>/dev/null || true

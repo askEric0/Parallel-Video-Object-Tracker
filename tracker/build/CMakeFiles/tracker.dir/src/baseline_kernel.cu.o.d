@@ -179,12 +179,12 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/local/cuda-11.7/bin/../targets/x86_64-linux/include/crt/cudacc_ext.h \
     /usr/local/cuda-11.7/bin/../targets/x86_64-linux/include/device_launch_parameters.h \
     /afs/andrew.cmu.edu/usr12/yanxinj/private/15618/proj/Parallel-Video-Object-Tracker/tracker/include/baseline_kernel.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/opencv.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/opencv_modules.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cvdef.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/version.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/hal/interface.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/opencv.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/opencv_modules.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cvdef.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/version.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/hal/interface.h \
     /usr/include/c++/11/cstddef \
     /usr/include/c++/11/cstdint \
     /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h \
@@ -192,13 +192,13 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/x86_64-linux-gnu/bits/wchar.h \
     /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
     /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cv_cpu_dispatch.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cv_cpu_dispatch.h \
     /usr/include/c++/11/array \
     /usr/include/c++/11/utility \
     /usr/include/c++/11/bits/stl_relops.h \
     /usr/include/c++/11/initializer_list \
     /usr/include/c++/11/bits/range_access.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/base.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/base.hpp \
     /usr/include/c++/11/climits \
     /usr/include/c++/11/algorithm \
     /usr/include/c++/11/bits/stl_algo.h \
@@ -239,7 +239,7 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/c++/11/bits/stl_bvector.h \
     /usr/include/c++/11/bits/vector.tcc \
     /usr/include/c++/11/pstl/execution_defs.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cvstd.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cvstd.hpp \
     /usr/include/c++/11/cstring \
     /usr/include/c++/11/cctype \
     /usr/include/ctype.h \
@@ -286,7 +286,7 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
     /usr/include/c++/11/bits/charconv.h \
     /usr/include/c++/11/bits/basic_string.tcc \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cvstd_wrapper.hpp \
     /usr/include/c++/11/memory \
     /usr/include/c++/11/bits/stl_raw_storage_iter.h \
     /usr/include/c++/11/bits/align.h \
@@ -305,22 +305,22 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/c++/11/bits/atomic_lockfree_defines.h \
     /usr/include/c++/11/backward/auto_ptr.h \
     /usr/include/c++/11/pstl/glue_memory_defs.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/neon_utils.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/vsx_utils.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/check.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/traits.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/matx.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/saturate.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/fast_math.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/types.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/neon_utils.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/vsx_utils.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/check.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/traits.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/matx.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/saturate.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/fast_math.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/types.hpp \
     /usr/include/c++/11/cfloat \
     /usr/lib/gcc/x86_64-linux-gnu/11/include/float.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/mat.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/bufferpool.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/mat.inl.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/persistence.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/operations.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cvstd.inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/mat.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/bufferpool.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/mat.inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/persistence.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/operations.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cvstd.inl.hpp \
     /usr/include/c++/11/complex \
     /usr/include/c++/11/sstream \
     /usr/include/c++/11/istream \
@@ -347,7 +347,7 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/c++/11/bits/ostream.tcc \
     /usr/include/c++/11/bits/istream.tcc \
     /usr/include/c++/11/bits/sstream.tcc \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/utility.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/utility.hpp \
     /usr/include/c++/11/mutex \
     /usr/include/c++/11/chrono \
     /usr/include/c++/11/ratio \
@@ -355,54 +355,54 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/c++/11/bits/parse_numbers.h \
     /usr/include/c++/11/bits/std_mutex.h \
     /usr/include/c++/11/bits/unique_lock.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/optim.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/ovx.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/calib3d.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/features2d.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/miniflann.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/defines.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/config.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/affine.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn/dnn.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/async.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn/version.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn/dict.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/optim.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/ovx.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/calib3d.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/features2d.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/miniflann.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/defines.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/config.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/affine.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn/dnn.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/async.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn/version.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn/dict.hpp \
     /usr/include/c++/11/map \
     /usr/include/c++/11/bits/stl_tree.h \
     /usr/include/c++/11/bits/stl_map.h \
     /usr/include/c++/11/bits/stl_multimap.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn/layer.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn/dnn.inl.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/dnn/utils/inference_engine.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/flann_base.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/general.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/matrix.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/params.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/any.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn/layer.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn/dnn.inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/dnn/utils/inference_engine.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/flann_base.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/general.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/matrix.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/params.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/any.h \
     /usr/include/c++/11/iostream \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/saving.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/nn_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/result_set.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/saving.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/nn_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/result_set.h \
     /usr/include/c++/11/set \
     /usr/include/c++/11/bits/stl_set.h \
     /usr/include/c++/11/bits/stl_multiset.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/all_indices.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/kdtree_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/dynamic_bitset.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/dist.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/heap.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/allocator.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/random.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/kdtree_single_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/kmeans_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/logger.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/composite_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/linear_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/hierarchical_clustering_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/lsh_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/lsh_table.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/all_indices.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/kdtree_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/dynamic_bitset.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/dist.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/heap.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/allocator.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/random.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/kdtree_single_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/kmeans_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/logger.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/composite_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/linear_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/hierarchical_clustering_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/lsh_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/lsh_table.h \
     /usr/include/c++/11/iomanip \
     /usr/include/c++/11/locale \
     /usr/include/c++/11/bits/locale_facets_nonio.h \
@@ -413,44 +413,44 @@ CMakeFiles/tracker.dir/src/baseline_kernel.cu.o : /afs/andrew.cmu.edu/usr12/yanx
     /usr/include/c++/11/bits/locale_facets_nonio.tcc \
     /usr/include/c++/11/bits/locale_conv.h \
     /usr/include/c++/11/bits/quoted_string.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/autotuned_index.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/ground_truth.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/index_testing.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/timer.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/flann/sampling.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/highgui.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/imgcodecs.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/videoio.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/imgproc.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/imgproc/segmentation.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/ml.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/ml/ml.inl.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/objdetect.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/objdetect/detection_based_tracker.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/photo.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/warpers.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/warpers.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cuda.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cuda_types.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/core/cuda.inl.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/warpers_inl.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/matchers.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/motion_estimators.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/util.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/autotuned_index.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/ground_truth.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/index_testing.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/timer.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/flann/sampling.h \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/highgui.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/imgcodecs.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/videoio.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/imgproc.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/imgproc/segmentation.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/ml.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/ml/ml.inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/objdetect.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/objdetect/detection_based_tracker.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/photo.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/warpers.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/warpers.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cuda.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cuda_types.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/core/cuda.inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/warpers_inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/matchers.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/motion_estimators.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/util.hpp \
     /usr/include/c++/11/list \
     /usr/include/c++/11/bits/stl_list.h \
     /usr/include/c++/11/bits/list.tcc \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/util_inl.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/util_inl.hpp \
     /usr/include/c++/11/queue \
     /usr/include/c++/11/deque \
     /usr/include/c++/11/bits/stl_deque.h \
     /usr/include/c++/11/bits/deque.tcc \
     /usr/include/c++/11/bits/stl_queue.h \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/camera.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/stitching/detail/blenders.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/video.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/video/tracking.hpp \
-    /usr/local/depot/fsl/fslpython/envs/fslpython/include/opencv4/opencv2/video/background_segm.hpp
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/camera.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/exposure_compensate.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/seam_finders.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/stitching/detail/blenders.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/video.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/video/tracking.hpp \
+    /usr/local/depot/fsl/fslpython/pkgs/libopencv-4.5.3-py38h5627943_1/include/opencv4/opencv2/video/background_segm.hpp

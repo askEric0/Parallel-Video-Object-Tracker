@@ -4,8 +4,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/tracker.dir/src/baseline_kernel.cu.o.d"
   "CMakeFiles/tracker.dir/src/main.cpp.o"
   "CMakeFiles/tracker.dir/src/main.cpp.o.d"
-  "CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o"
-  "CMakeFiles/tracker.dir/src/ncc_cpu.cpp.o.d"
   "tracker"
   "tracker.pdb"
 )

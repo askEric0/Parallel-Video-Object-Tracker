@@ -1,8 +1,5 @@
-// Optimize for exiting and re-entering objects
 #include <opencv2/opencv.hpp>
 #include <iostream>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include "baseline_kernel.hpp"
 #include "utils.hpp"
 
@@ -13,53 +10,42 @@ static const int SEARCH_RADIUS_Y = 60; // 80
 static const int BATCH_SIZE = 4;
 // Minimum acceptable NCC score. Keep the previous bbox if the score is below this threshold.
 static const double NCC_MIN_CONFIDENCE = 0.4;
-// Higher confidence threshold for global search (to avoid false matches)
-static const double NCC_GLOBAL_CONFIDENCE = 0.6;
 // Strong confidence threshold. Update the template if the score is above this threshold.
 static const double NCC_STRONG_CONFIDENCE = 0.7; // 1.0
 // Learning rate for template adaptation.
 static const double TEMPLATE_UPDATE_LR = 0.1; // 0.0
-// Number of consecutive low-confidence frames before switching to global search
-static const int LOST_FRAME_THRESHOLD = 50;
 
-static int demo_tracker(const std::string& video_path, std::string mode, bool first_frame);
-static int record_tracker(const std::string& video_path, std::string mode, int batch_size, const std::string& output_path, bool first_frame);
+static int demo_tracker(const std::string& video_path, std::string mode);
+static int record_tracker(const std::string& video_path, std::string mode, int batch_size, const std::string& output_path);
 
-static std::string generate_output_path(const std::string& video_path, const std::string& mode, int batch_size) {
+static std::string generate_output_path(const std::string& video_path) {
     size_t last_slash = video_path.find_last_of("/\\");
     size_t last_dot = video_path.find_last_of(".");
+    
+    std::string dir = "";
     std::string base = video_path;
     std::string ext = ".mp4";
+    
     if (last_slash != std::string::npos) {
+        dir = video_path.substr(0, last_slash + 1);
         base = video_path.substr(last_slash + 1);
     }
+    
     if (last_dot != std::string::npos && last_dot > last_slash) {
         ext = video_path.substr(last_dot);
         base = base.substr(0, base.find_last_of("."));
     }
-    mkdir("output", 0755);
-    std::string filename = "output/" + base + "_" + mode;
-    if (mode == "batch" && batch_size > 0) {
-        filename += "_" + std::to_string(batch_size);
-    }    
-    filename += ext;
-    return filename;
-}
-
-static bool isBboxOutsideFrame(const cv::Rect& bbox, int frameW, int frameH) {
-    int cx = bbox.x + bbox.width / 2;
-    int cy = bbox.y + bbox.height / 2;
-    return (cx < 0 || cx >= frameW || cy < 0 || cy >= frameH) ||
-           (bbox.x + bbox.width < 0 || bbox.x >= frameW || 
-            bbox.y + bbox.height < 0 || bbox.y >= frameH);
+    
+    return dir + base + "_tracked" + ext;
 }
 
 int main(int argc, char** argv) {
     std::string video_path = (argc > 1) ? argv[1] : "data/car.mp4";
     std::string mode = "cuda";
     bool record = false;
-    bool first_frame = false;
     int batch_size = 0;
+    std::string output_path = generate_output_path(video_path);
+
     for (int i = 2; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--cpu") mode = "cpu";
@@ -67,54 +53,41 @@ int main(int argc, char** argv) {
         else if (arg == "--const") mode = "const";
         else if (arg == "--const_tiled") mode = "const_tiled";
         else if (arg == "--record")  record = true;
-        else if (arg == "--first") first_frame = true;
         else if (arg.rfind("--batch=", 0) == 0) {
             mode = "batch";
             batch_size = std::max(1, std::atoi(arg.substr(8).c_str()));
         }
     }
-    std::string output_path = generate_output_path(video_path, mode, batch_size);
-    if (record) return record_tracker(video_path, mode, batch_size, output_path, first_frame);
-    return demo_tracker(video_path, mode, first_frame);
+
+    if (record) return record_tracker(video_path, mode, batch_size, output_path);
+    return demo_tracker(video_path, mode);
 }
 
-// Real-time tracking
-static int demo_tracker(const std::string& video_path, std::string mode, bool first_frame) {
+static int demo_tracker(const std::string& video_path, std::string mode) {
     cv::VideoCapture cap(video_path);
     if (!cap.isOpened()) {
         std::cerr << "Cannot open video: " << video_path << std::endl;
         return -1;
     }
     cv::Mat frame;
-    if (first_frame) {
-        // Directly use first frame for template selection
+    cv::namedWindow("Frame Preview", cv::WINDOW_NORMAL);
+    std::cout << "Use the preview window to pick a frame that contains the target object.\n"
+              << "Press ENTER to select the current frame. Press ESC to quit.\n";
+    while (true) {
         if (!cap.read(frame)) {
-            std::cerr << "Cannot read first frame from video." << std::endl;
+            std::cerr << "Reached End of Video." << std::endl;
             return -1;
         }
-        std::cout << "Select template from the first frame.\n";
-    } else {
-        // Allow user to browse frames and select one
-        cv::namedWindow("Frame Preview", cv::WINDOW_NORMAL);
-        std::cout << "Use the preview window to pick a frame that contains the target object.\n"
-                  << "Press ENTER to select the current frame. Press ESC to quit.\n";
-        while (true) {
-            if (!cap.read(frame)) {
-                std::cerr << "Reached End of Video." << std::endl;
-                return -1;
-            }
-            cv::imshow("Frame Preview", frame);
-            int key = cv::waitKey(30);
+        cv::imshow("Frame Preview", frame);
+        int key = cv::waitKey(30);
 
-            if (key == 27) { 
-                std::cout << "Template selection cancelled by user." << std::endl;
-                return 0;
-            }
-            if (key == '\r' || key == '\n') break;
+        if (key == 27) { 
+            std::cout << "Template selection cancelled by user." << std::endl;
+            return 0;
         }
-        cv::destroyWindow("Frame Preview");
+        if (key == '\r' || key == '\n') break;
     }
-    
+    cv::destroyWindow("Frame Preview");
     cv::Rect roi = cv::selectROI("Select Template", frame, false, false);
     if (roi.width == 0 || roi.height == 0) {
         std::cerr << "No template selected" << std::endl;
@@ -130,7 +103,6 @@ static int demo_tracker(const std::string& video_path, std::string mode, bool fi
     cv::imshow("Template", roi_visual);
     cv::waitKey(1);
     cv::namedWindow("Tracking", cv::WINDOW_NORMAL);
-    std::cout << "Tracking mode: " << mode << std::endl;
     // Current estimate of object location in full-frame coordinates.
     cv::Rect curr_bbox = roi;
     // Timestamp of previous frame for FPS computation.
@@ -138,9 +110,6 @@ static int demo_tracker(const std::string& video_path, std::string mode, bool fi
     // Overall timing for interactive tracking.
     int64 t_start = cv::getTickCount();
     int total_frames = 0;
-    // Lost frame tracking
-    int lost_frame_count = 0;
-    bool use_global_search = false;
 
     while (true) {
         // End of video.    
@@ -169,73 +138,50 @@ static int demo_tracker(const std::string& video_path, std::string mode, bool fi
         else {
             ncc_match_naive_cuda(frame_gray, templ_gray, ncc_map);
         }
-        // Check if object is outside frame or lost
-        bool bbox_outside = isBboxOutsideFrame(curr_bbox, frameW, frameH);
         // Get the center of the current bounding box.
         int cx = curr_bbox.x + curr_bbox.width  / 2;
         int cy = curr_bbox.y + curr_bbox.height / 2;
         // Get the dimensions of the NCC map.
         int outW = ncc_map.cols;
         int outH = ncc_map.rows;
+        // Get the min and max x and y of the search window.
+        int minTx = std::max(0, cx - SEARCH_RADIUS_X - templW / 2);
+        int maxTx = std::min(outW - 1, cx + SEARCH_RADIUS_X - templW / 2);
+        int minTy = std::max(0, cy - SEARCH_RADIUS_Y - templH / 2);
+        int maxTy = std::min(outH - 1, cy + SEARCH_RADIUS_Y - templH / 2);
+        // Get the dimensions of the search window.
+        int searchW = maxTx - minTx + 1;
+        int searchH = maxTy - minTy + 1;
+        // Get the best location and value of the NCC map.
         cv::Point best_loc;
         double best_val = -1.0;
-        // If object is outside frame or has been lost for several frames, use global search
-        if (bbox_outside || lost_frame_count >= LOST_FRAME_THRESHOLD) {
-            use_global_search = true;
-        }
-        if (use_global_search) {
-            // Global search: search the entire NCC map
+        if (searchW > 0 && searchH > 0) {
+            cv::Rect search_region(minTx, minTy, searchW, searchH);
+            cv::Mat ncc_roi = ncc_map(search_region);
+            double min_val, max_val;
+            cv::Point min_loc, max_loc;
+            cv::minMaxLoc(ncc_roi, &min_val, &max_val, &min_loc, &max_loc);
+            best_val = max_val;
+            best_loc = cv::Point(max_loc.x + minTx, max_loc.y + minTy);
+        } else {
+            // If the search window is invalid, use the entire NCC map.
             double min_val, max_val;
             cv::Point min_loc, max_loc;
             cv::minMaxLoc(ncc_map, &min_val, &max_val, &min_loc, &max_loc);
             best_val = max_val;
             best_loc = max_loc;
-        } else {
-            // Local search: restrict to window around previous bbox center
-            int minTx = std::max(0, cx - SEARCH_RADIUS_X - templW / 2);
-            int maxTx = std::min(outW - 1, cx + SEARCH_RADIUS_X - templW / 2);
-            int minTy = std::max(0, cy - SEARCH_RADIUS_Y - templH / 2);
-            int maxTy = std::min(outH - 1, cy + SEARCH_RADIUS_Y - templH / 2);
-            // Get the dimensions of the search window.
-            int searchW = maxTx - minTx + 1;
-            int searchH = maxTy - minTy + 1;
-
-            if (searchW > 0 && searchH > 0) {
-                cv::Rect search_region(minTx, minTy, searchW, searchH);
-                cv::Mat ncc_roi = ncc_map(search_region);
-                double min_val, max_val;
-                cv::Point min_loc, max_loc;
-                cv::minMaxLoc(ncc_roi, &min_val, &max_val, &min_loc, &max_loc);
-                best_val = max_val;
-                best_loc = cv::Point(max_loc.x + minTx, max_loc.y + minTy);
-            } else {
-                // Fallback: if the search window collapses, use the global best match.
-                double min_val, max_val;
-                cv::Point min_loc, max_loc;
-                cv::minMaxLoc(ncc_map, &min_val, &max_val, &min_loc, &max_loc);
-                best_val = max_val;
-                best_loc = max_loc;
-            }
         }
-        // Update the current bounding box if the best NCC score is above the confidence threshold.
-        double confidence_threshold = use_global_search ? NCC_GLOBAL_CONFIDENCE : NCC_MIN_CONFIDENCE;
-        if (best_val >= confidence_threshold) {
+
+        // Update the current bounding box if the best NCC score is above the minimum confidence threshold.
+        if (best_val >= NCC_MIN_CONFIDENCE) {
             curr_bbox.x = best_loc.x;
             curr_bbox.y = best_loc.y;
             curr_bbox.width  = templW;
             curr_bbox.height = templH;
-            // Object found: reset lost frame counter and switch back to local search
-            lost_frame_count = 0;
-            if (!isBboxOutsideFrame(curr_bbox, frameW, frameH)) {
-                use_global_search = false;
-            }
             if (best_val >= NCC_STRONG_CONFIDENCE) {
                 cv::Mat new_patch = frame_gray(curr_bbox).clone();
                 cv::addWeighted(templ_gray, 1 - TEMPLATE_UPDATE_LR, new_patch, TEMPLATE_UPDATE_LR, 0.0, templ_gray);
             }
-        } else {
-            // Low confidence: increment lost frame counter
-            lost_frame_count++;
         }
         // Draw the current bounding box on the frame.
         cv::rectangle(frame, curr_bbox, cv::Scalar(0, 255, 0), 2);
@@ -257,9 +203,11 @@ static int demo_tracker(const std::string& video_path, std::string mode, bool fi
         double display_scale = std::min(1.0, std::min(scale_w, scale_h));
         cv::resize(frame, display_frame, cv::Size(), display_scale, display_scale, cv::INTER_AREA);
         cv::imshow("Tracking", display_frame);
+
         int key = cv::waitKey(1);
         if (key == 27) break;
     }
+
     // Report total time and average FPS for the interactive tracking phase.
     int64 t_end = cv::getTickCount();
     double time = double(t_end - t_start) / cv::getTickFrequency();
@@ -268,11 +216,11 @@ static int demo_tracker(const std::string& video_path, std::string mode, bool fi
               << "frames=" << total_frames << ", "
               << "time=" << time << " s, "
               << "FPS=" << avg_fps << std::endl;
+
     return 0;
 }
 
-// Record tracking
-static int record_tracker(const std::string& video_path, std::string mode, int batch_size, const std::string& output_path, bool first_frame) {
+static int record_tracker(const std::string& video_path, std::string mode, int batch_size, const std::string& output_path) {
     cv::VideoCapture cap(video_path);
     if (!cap.isOpened()) {
         std::cerr << "Cannot open video: " << video_path << std::endl;
@@ -280,37 +228,30 @@ static int record_tracker(const std::string& video_path, std::string mode, int b
     }
     const char* display = std::getenv("DISPLAY");
     if (display == nullptr || std::string(display).empty()) {
-        std::cerr << "DISPLAY not set\n";
+        std::cerr << "[Headless] DISPLAY not set\n";
         return -1;
     }
+    // Choose the frame to pick the template from and start tracking from.
     cv::Mat frame;
-    if (first_frame) {
-        // Directly use first frame for template selection
+    cv::namedWindow("Frame Preview", cv::WINDOW_NORMAL);
+    std::cout << "Use the preview window to pick a frame that contains the target object.\n"
+              << "Press ENTER to select the current frame. Press ESC to quit.\n";
+
+    while (true) {
         if (!cap.read(frame)) {
-            std::cerr << "Cannot read first frame from video." << std::endl;
+            std::cerr << "Reached End of Video." << std::endl;
             return -1;
         }
-    } else {
-        // Allow user to browse frames and select one
-        cv::namedWindow("Frame Preview", cv::WINDOW_NORMAL);
-        std::cout << "Use the preview window to pick a frame that contains the target object.\n"
-                  << "Press ENTER to select the current frame. Press ESC to quit.\n";
+        cv::imshow("Frame Preview", frame);
+        int key = cv::waitKey(30);
 
-        while (true) {
-            if (!cap.read(frame)) {
-                std::cerr << "Reached End of Video." << std::endl;
-                return -1;
-            }
-            cv::imshow("Frame Preview", frame);
-            int key = cv::waitKey(30);
-            if (key == 27) { 
-                std::cout << "Template selection cancelled by user." << std::endl;
-                return 0;
-            }
-            if (key == '\r' || key == '\n') break;
+        if (key == 27) { 
+            std::cout << "Template selection cancelled by user." << std::endl;
+            return 0;
         }
-        cv::destroyWindow("Frame Preview");
+        if (key == '\r' || key == '\n') break;
     }
+    cv::destroyWindow("Frame Preview");
     // Select the template from the chosen frame
     cv::Rect roi = cv::selectROI("Select Template", frame, false, false);
     if (roi.width == 0 || roi.height == 0) {
@@ -341,12 +282,6 @@ static int record_tracker(const std::string& video_path, std::string mode, int b
     std::vector<cv::Mat> batch_ncc;
     if (mode == "batch")
         batch_frames.reserve(batch_size);
-    std::cout << "Tracking mode: " << mode;
-    if (mode == "batch") {
-        std::cout << " (batch size: " << batch_size << ")";
-    }
-    std::cout << std::endl;
-    std::cout << "Output video: " << output_path << std::endl;
     // Write the first frame with the selected bounding box.
     cv::rectangle(frame, curr_bbox, cv::Scalar(0, 255, 0), 2);
     writer.write(frame);
@@ -354,10 +289,6 @@ static int record_tracker(const std::string& video_path, std::string mode, int b
     int64 last_tick = cv::getTickCount();
     int64 t_start = cv::getTickCount();
     int total_frames = 1;
-    // Lost frame tracking
-    int lost_frame_count = 0;
-    bool use_global_search = false;
-    // Start tracking from the second frame.
     std::cout << "Tracking..." << std::endl;
     while (true) {
         if (!cap.read(frame)) break;
@@ -396,74 +327,48 @@ static int record_tracker(const std::string& video_path, std::string mode, int b
             batch_ncc.clear();
         }
         else ncc_match_naive_cuda(frame_gray, templ_gray, ncc_map);
-        // Check if object is outside frame or lost
-        bool bbox_outside = isBboxOutsideFrame(curr_bbox, frameW, frameH);
         // Get the center of the current bounding box.
         int cx = curr_bbox.x + curr_bbox.width  / 2;
         int cy = curr_bbox.y + curr_bbox.height / 2;
         // Get the dimensions of the NCC map.
         int outW = ncc_map.cols;
         int outH = ncc_map.rows;
+        // Get the min and max x and y of the search window.
+        int minTx = std::max(0, cx - SEARCH_RADIUS_X - templW / 2);
+        int maxTx = std::min(outW - 1, cx + SEARCH_RADIUS_X - templW / 2);
+        int minTy = std::max(0, cy - SEARCH_RADIUS_Y - templH / 2);
+        int maxTy = std::min(outH - 1, cy + SEARCH_RADIUS_Y - templH / 2);
+        // Get the dimensions of the search window.
+        int searchW = maxTx - minTx + 1;
+        int searchH = maxTy - minTy + 1;
+        // Get the best location and value of the NCC map.
         cv::Point best_loc;
         double best_val = -1.0;
-        // If object is outside frame or has been lost for several frames, use global search
-        bool prev_global_search = use_global_search;
-        if (bbox_outside || lost_frame_count >= LOST_FRAME_THRESHOLD) {
-            use_global_search = true;
-        }
-        if (use_global_search) {
-            // Global search: search the entire NCC map
+        if (searchW > 0 && searchH > 0) {
+            cv::Rect ncc_search_roi(minTx, minTy, searchW, searchH);
+            cv::Mat ncc_roi = ncc_map(ncc_search_roi);
+            double min_val, max_val;
+            cv::Point min_loc, max_loc;
+            cv::minMaxLoc(ncc_roi, &min_val, &max_val, &min_loc, &max_loc);
+            best_val = max_val;
+            best_loc = cv::Point(max_loc.x + minTx, max_loc.y + minTy);
+        } else {
             double min_val, max_val;
             cv::Point min_loc, max_loc;
             cv::minMaxLoc(ncc_map, &min_val, &max_val, &min_loc, &max_loc);
             best_val = max_val;
             best_loc = max_loc;
-        } else {
-            // Local search: restrict to window around previous bbox center
-            int minTx = std::max(0, cx - SEARCH_RADIUS_X - templW / 2);
-            int maxTx = std::min(outW - 1, cx + SEARCH_RADIUS_X - templW / 2);
-            int minTy = std::max(0, cy - SEARCH_RADIUS_Y - templH / 2);
-            int maxTy = std::min(outH - 1, cy + SEARCH_RADIUS_Y - templH / 2);
-            // Get the dimensions of the search window.
-            int searchW = maxTx - minTx + 1;
-            int searchH = maxTy - minTy + 1;
-            // If the search window is valid, find the best match in the search window.
-            if (searchW > 0 && searchH > 0) {
-                cv::Rect ncc_search_roi(minTx, minTy, searchW, searchH);
-                cv::Mat ncc_roi = ncc_map(ncc_search_roi);
-                double min_val, max_val;
-                cv::Point min_loc, max_loc;
-                cv::minMaxLoc(ncc_roi, &min_val, &max_val, &min_loc, &max_loc);
-                best_val = max_val;
-                best_loc = cv::Point(max_loc.x + minTx, max_loc.y + minTy);
-            } else {
-                // If the search window collapses, use the global best match.
-                double min_val, max_val;
-                cv::Point min_loc, max_loc;
-                cv::minMaxLoc(ncc_map, &min_val, &max_val, &min_loc, &max_loc);
-                best_val = max_val;
-                best_loc = max_loc;
-            }
         }
-        // Update the current bounding box if the best NCC score is above the confidence threshold.
-        double confidence_threshold = use_global_search ? NCC_GLOBAL_CONFIDENCE : NCC_MIN_CONFIDENCE;
-        if (best_val >= confidence_threshold) {
+        // Update the current bounding box if the best NCC score is above the minimum confidence threshold.
+        if (best_val >= NCC_MIN_CONFIDENCE) {
             curr_bbox.x = best_loc.x;
             curr_bbox.y = best_loc.y;
             curr_bbox.width  = templW;
             curr_bbox.height = templH;
-            // Object found: reset lost frame counter and switch back to local search
-            lost_frame_count = 0;
-            if (!isBboxOutsideFrame(curr_bbox, frameW, frameH)) {
-                use_global_search = false;
-            }
             if (best_val >= NCC_STRONG_CONFIDENCE) {
                 cv::Mat new_patch = frame_gray(curr_bbox).clone();
                 cv::addWeighted(templ_gray, 1 - TEMPLATE_UPDATE_LR, new_patch, TEMPLATE_UPDATE_LR, 0.0, templ_gray);
             }
-        } else {
-            // Low confidence, increment the lost frame counter.
-            lost_frame_count++;
         }
         // Draw the current bounding box on the frame.
         cv::rectangle(frame, curr_bbox, cv::Scalar(0, 255, 0), 2);
@@ -478,6 +383,7 @@ static int record_tracker(const std::string& video_path, std::string mode, int b
         cv::putText(frame, cv::format("FPS: %.1f", fps), cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 255, 0), 2);
         writer.write(frame);
     }
+
     // Report total time and average FPS for the interactive tracking phase.
     int64 t_end = cv::getTickCount();
     double time = double(t_end - t_start) / cv::getTickFrequency();
