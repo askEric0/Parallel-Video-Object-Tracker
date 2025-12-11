@@ -1,0 +1,1 @@
+/usr/local/cuda-11.7/bin/nvcc -forward-unknown-to-host-compiler -ccbin=/usr/bin/gcc-11  "--generate-code=arch=compute_52,code=[compute_52,sm_52]" -Xcompiler=-fPIC -Wno-deprecated-gpu-targets -shared -dlink --options-file CMakeFiles/tracker.dir/deviceObjects1.rsp -o CMakeFiles/tracker.dir/cmake_device_link.o --options-file CMakeFiles/tracker.dir/deviceLinkLibs.rsp

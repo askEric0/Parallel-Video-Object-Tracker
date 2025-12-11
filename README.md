@@ -10,30 +10,6 @@ We developed a high-performance visual object tracker implemented in C++ and CUD
 ### Url
 https://github.com/askEric0/Parallel-Video-Object-Tracker.git
 
-### Folder Structure
-
-Parallel-Video-Object-Tracker/
-├─ README.md                # Project overview (you can add build/run instructions here)
-├─ baseline_cpu/
-│  ├─ cpub.cpp              # CPU baseline implementation
-│  └─ Makefile              # Build instructions for CPU OpenCV baseline demo (Windows / nvcc)
-├─ baseline_cuda/
-│  ├─ cudab.cpp             # CUDA baseline implementation
-│  └─ Makefile              # Build instructions for CUDA pure optical baseline demo (Windows / nvcc)
-├─ data/
-│  └─ ...                   # Input data, configuration files, sample datasets
-├─ output/                  # Output videos
-└─ tracker/
-   ├─ Makefile              # Build file for tracker (Windows / nvcc)
-   ├─ tracker.exp           # Experiment / run config
-   ├─ include/
-   │  ├─ baseline_kernel.hpp# Kernel declarations / shared headers
-   │  └─ utils.hpp          # Utility helpers
-   └─ src/
-      ├─ baseline_kernel.cu # CUDA kernel definitions
-      ├─ main.cpp           # Program entrypoint
-      └─ ncc_cpu.cpp        # CPU reference implementation (NCC)
-
 
 ### Build & Usage
 
