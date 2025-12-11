@@ -7,7 +7,6 @@ LOGS	   := logs
 
 all: $(EXECUTABLE)
 
-###########################################################
 
 ARCH=$(shell uname | sed -e 's/-.*//g')
 OBJDIR=objs

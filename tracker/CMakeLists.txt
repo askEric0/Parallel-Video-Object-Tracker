@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV QUIET)
 if(NOT OpenCV_FOUND)
-    # Try alternative paths
     set(OpenCV_DIR "/usr/local/depot/fsl/fslpython/envs/fslpython/lib/cmake/opencv4")
     find_package(OpenCV REQUIRED)
 endif()
@@ -34,7 +33,6 @@ target_link_directories(tracker PRIVATE ${GCC_LIBDIR})
 
 set_target_properties(tracker PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
-    # Override CMake's default forwarding flag and add our custom flags
     CUDA_NVCC_FLAGS "--no-forward-unknown-to-host-compiler;-D_Float32=float;-D_Float64=double;-D_Float32x=float;-D_Float64x=double;-D_Float128=long double"
 )
 
