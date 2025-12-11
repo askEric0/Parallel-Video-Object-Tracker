@@ -34,6 +34,10 @@ https://github.com/askEric0/Parallel-Video-Object-Tracker.git
    ```bash
    cd tracker
    ```
+   Or if you are on GHC cluster: 
+   ```bash
+   cd tracker_ghc
+   ```
 3. Build using Makefile:
    ```bash
    nmake
@@ -43,7 +47,9 @@ https://github.com/askEric0/Parallel-Video-Object-Tracker.git
    make
    ```
    *Note: You will need to change Makefile to appropriate compilers and Opencv pathes if running on you own or GHC Machines*
-   *The original Makefile runs originally on windows*
+   *The original tracker builds on windows*
+   *The original tracker_ghc builds on ghc linux clusters*
+
 
 **Output**: `tracker.exe`
 
